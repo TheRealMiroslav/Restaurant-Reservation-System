@@ -32,7 +32,7 @@ public class DatabaseManager {
     }
 
     public void vyhledatRestauraci(String Text) {
-        String sql = "SELECT FROM Restaurace WHERE navez LIKE ? OR adresa LIKE ?";
+        String sql = "SELECT * FROM Restaurace WHERE nazev LIKE ? OR adresa LIKE ?";
 
         try (Connection conn = DatabaseManager.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, "%" + Text + "%");
