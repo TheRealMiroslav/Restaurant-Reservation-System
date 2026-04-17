@@ -22,14 +22,25 @@ public class RezervaceService {
     // UC-03
     public Rezervace vytvorRezervaci(Zakaznik zakaznik, Stul stul, Timestamp od, Timestamp do_, String poznamka, int pocetOsob) throws Exception {
         // nebo mohu sem jen predavat ID stolu nebo zakaznika a udělat to pomocí DAO, ale to by bylo zbytečné, když už mám objekty.
+
+        // UC-03 krok 7 - kontrola kolize
+        boolean dostupny = stulDao.jeStulDostupny(stul.getId(), od.toString(), do_.toString());
+
+        if (!dostupny) {
+            throw new IllegalArgumentException("Stůl není dostupný v daném časovém období");
+        }
+
         Rezervace rezervace = RezervaceFactory.vytvorNovou(zakaznik, stul, od, do_, poznamka, pocetOsob);
+
         rezervaceDao.vytvoritRezervaci(rezervace);
+
         return rezervace;
     }
 
     // UC-04
-    public void zrusRezervaci(Rezervace rezervace) throws Exception  {
+    public void zrusRezervaci(Rezervace rezervace) throws Exception {
         rezervace.zrusit();
+
         rezervaceDao.zrusitRezervaci(rezervace.getId());
     }
 

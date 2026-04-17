@@ -24,6 +24,12 @@ public class ZakaznikService {
     }
 
     public void registrace(Zakaznik zakaznik) throws Exception {
+        Optional<Zakaznik> existing = zakaznikDao.najdiPodleEmailu(zakaznik.getEmail());
+
+        if (existing.isPresent()) {
+            throw new IllegalArgumentException("Účet s tímto e-mailem již existuje.");
+        }
+
         zakaznikDao.vytvorZakaznika(zakaznik);
     }
 }
