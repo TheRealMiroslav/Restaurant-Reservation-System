@@ -1,17 +1,35 @@
 package org.mns.model;
 
+import java.util.List;
+
 public class Restaurace {
+    protected int id;
     protected String nazev;
     protected String adresa;
-    protected String telefon;
+    protected String telefonniCislo;
     protected String email;
     protected double prumerneHodnoceni;
 
-    public Restaurace(String nazev, String adresa, String telefon, String email) {
+    protected List<Stul> stoly;
+    protected List<Recenze> recenze;
+
+    public Restaurace(int id, String nazev, String adresa, String telefonniCislo, String email) {
+        this.id = id;
         this.nazev = nazev;
         this.adresa = adresa;
-        this.telefon = telefon;
+        this.telefonniCislo = telefonniCislo;
         this.email = email;
+    }
+
+    public Restaurace() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNazev() {
@@ -30,12 +48,12 @@ public class Restaurace {
         this.adresa = adresa;
     }
 
-    public String getTelefon() {
-        return telefon;
+    public String getTelefonniCislo() {
+        return telefonniCislo;
     }
 
-    public void setTelefon(String telefon) {
-        this.telefon = telefon;
+    public void setTelefonniCislo(String telefonniCislo) {
+        this.telefonniCislo = telefonniCislo;
     }
 
     public String getEmail() {
@@ -52,5 +70,21 @@ public class Restaurace {
 
     public void setPrumerneHodnoceni(double prumerneHodnoceni) {
         this.prumerneHodnoceni = prumerneHodnoceni;
+    }
+
+    public List<Stul> getStoly() {
+        return stoly;
+    }
+
+    public void setStoly(List<Stul> stoly) {
+        this.stoly = stoly;
+    }
+
+    public List<Recenze> getRecenze() {
+        return recenze;
+    }
+
+    public void setRecenze(List<Recenze> recenze) {
+        this.recenze = recenze;
     }
 }

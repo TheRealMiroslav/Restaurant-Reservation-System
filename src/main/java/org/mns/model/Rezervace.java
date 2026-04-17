@@ -1,64 +1,97 @@
 package org.mns.model;
 
-import java.util.Date;
+import org.mns.model.state.NepotvrzenaStav;
+import org.mns.model.state.RezervaceStav;
+
+import java.sql.Timestamp;
 
 public class Rezervace {
-    protected Zakaznik zakaznik;
-    protected Stul stul;
-    protected Date casZacatek;
-    protected Date casKonec;
+    protected int id;
+    protected int zakaznikId;
+    protected int stulId;
+
+    protected Timestamp casZacatek;
+    protected Timestamp casKonec;
     protected String poznamka;
-    protected int pocetOsob;
+    protected RezervaceStav stav;
 
-    protected boolean aktivni;
-
-    public Rezervace(Zakaznik zakaznik, Stul stul, Date casZacatek, Date casKonec, String poznamka, int pocetOsob) {
-        this.zakaznik = zakaznik;
-        this.stul = stul;
+    public Rezervace(int id, int zakaznikId, int stulId, Timestamp casZacatek, Timestamp casKonec, String poznamka) {
+        this.id = id;
+        this.zakaznikId = zakaznikId;
+        this.stulId = stulId;
         this.casZacatek = casZacatek;
         this.casKonec = casKonec;
         this.poznamka = poznamka;
-        this.pocetOsob = pocetOsob;
-        this.aktivni = false;
+        this.stav = new NepotvrzenaStav();
+        ;
     }
 
-    public void potvrditRezervaci() {
-        this.aktivni = true;
+    public Rezervace(int zakaznikId, int stulId, Timestamp casZacatek, Timestamp casKonec, String poznamka) {
+        this.zakaznikId = zakaznikId;
+        this.stulId = stulId;
+        this.casZacatek = casZacatek;
+        this.casKonec = casKonec;
+        this.poznamka = poznamka;
+        this.stav = new NepotvrzenaStav();
     }
 
-    public void zrusitRezervaci() {
-        this.aktivni = false;
+    public Rezervace() {
+
     }
 
-    public Zakaznik getZakaznik() {
-        return zakaznik;
+    public void potvrdit() {
+        stav.potvrdit(this);
     }
 
-    public void setZakaznik(Zakaznik zakaznik) {
-        this.zakaznik = zakaznik;
+    public void zrusit() {
+        stav.zrusit(this);
     }
 
-    public Stul getStul() {
-        return stul;
+    public void dokoncit() {
+        stav.dokoncit(this);
     }
 
-    public void setStul(Stul stul) {
-        this.stul = stul;
+    public String getStavNazev() {
+        return stav.getNazev();
     }
 
-    public Date getCasZacatek() {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getZakaznikId() {
+        return zakaznikId;
+    }
+
+    public void setZakaznikId(int zakaznikId) {
+        this.zakaznikId = zakaznikId;
+    }
+
+    public int getStulId() {
+        return stulId;
+    }
+
+    public void setStulId(int stulId) {
+        this.stulId = stulId;
+    }
+
+    public Timestamp getCasZacatek() {
         return casZacatek;
     }
 
-    public void setCasZacatek(Date casZacatek) {
+    public void setCasZacatek(Timestamp casZacatek) {
         this.casZacatek = casZacatek;
     }
 
-    public Date getCasKonec() {
+    public Timestamp getCasKonec() {
         return casKonec;
     }
 
-    public void setCasKonec(Date casKonec) {
+    public void setCasKonec(Timestamp casKonec) {
         this.casKonec = casKonec;
     }
 
@@ -70,11 +103,11 @@ public class Rezervace {
         this.poznamka = poznamka;
     }
 
-    public int getPocetOsob() {
-        return pocetOsob;
+    public RezervaceStav getStav() {
+        return stav;
     }
 
-    public void setPocetOsob(int pocetOsob) {
-        this.pocetOsob = pocetOsob;
+    public void setStav(RezervaceStav stav) {
+        this.stav = stav;
     }
 }

@@ -1,32 +1,32 @@
 package org.mns.model;
 
 public class Recenze {
-    protected Zakaznik zakaznik;
-    protected Restaurace restaurace;
+    protected int zakaznikId;
+    protected int restauraceId;
     protected double hodnoceni;
     protected String slovniHodnoceni;
 
-    public Recenze(Zakaznik zakaznik, Restaurace restaurace, double hodnoceni, String slovniHodnoceni) {
-        this.zakaznik = zakaznik;
-        this.restaurace = restaurace;
+    public Recenze(int zakaznikId, int restauraceId, double hodnoceni, String slovniHodnoceni) {
+        this.zakaznikId = zakaznikId;
+        this.restauraceId = restauraceId;
         this.hodnoceni = hodnoceni;
         this.slovniHodnoceni = slovniHodnoceni;
     }
 
-    public Zakaznik getZakaznik() {
-        return zakaznik;
+    public int getZakaznikId() {
+        return zakaznikId;
     }
 
-    public void setZakaznik(Zakaznik zakaznik) {
-        this.zakaznik = zakaznik;
+    public void setZakaznikId(int zakaznikId) {
+        this.zakaznikId = zakaznikId;
     }
 
-    public Restaurace getRestaurace() {
-        return restaurace;
+    public int getRestauraceId() {
+        return restauraceId;
     }
 
-    public void setRestaurace(Restaurace restaurace) {
-        this.restaurace = restaurace;
+    public void setRestauraceId(int restauraceId) {
+        this.restauraceId = restauraceId;
     }
 
     public double getHodnoceni() {

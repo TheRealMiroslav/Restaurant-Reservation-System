@@ -1,16 +1,41 @@
 package org.mns.model;
 
 public abstract class Osoba {
+    protected int id;
     protected String jmeno;
     protected String prijmeni;
     protected String email;
-    protected String telefoniCislo;
+    protected String telefonniCislo;
 
-    public Osoba(String jmeno, String prijmeni, String email, String telefoniCislo) {
+    protected String heslo;
+
+    public Osoba(int id, String jmeno, String prijmeni, String email, String telefonniCislo, String heslo) {
+        this.id = id;
         this.jmeno = jmeno;
         this.prijmeni = prijmeni;
         this.email = email;
-        this.telefoniCislo = telefoniCislo;
+        this.telefonniCislo = telefonniCislo;
+        this.heslo = heslo;
+    }
+
+    public Osoba(int id, String jmeno, String prijmeni, String email, String telefonniCislo) {
+        this.id = id;
+        this.jmeno = jmeno;
+        this.prijmeni = prijmeni;
+        this.email = email;
+        this.telefonniCislo = telefonniCislo;
+    }
+
+    public Osoba() {
+
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getJmeno() {
@@ -37,11 +62,19 @@ public abstract class Osoba {
         this.email = email;
     }
 
-    public String getTelefoniCislo() {
-        return telefoniCislo;
+    public String getTelefonniCislo() {
+        return telefonniCislo;
     }
 
-    public void setTelefoniCislo(String telefoniCislo) {
-        this.telefoniCislo = telefoniCislo;
+    public void setTelefonniCislo(String telefonniCislo) {
+        this.telefonniCislo = telefonniCislo;
+    }
+
+    public String getHeslo() {
+        return heslo;
+    }
+
+    public void setHeslo(String heslo) {
+        this.heslo = heslo;
     }
 }
