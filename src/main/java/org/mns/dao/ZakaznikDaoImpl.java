@@ -60,7 +60,7 @@ public class ZakaznikDaoImpl implements ZakaznikDao {
     }
 
     @Override
-    public void uloz(Zakaznik zakaznik) throws Exception {
+    public void vytvorZakaznika(Zakaznik zakaznik) throws Exception {
         String sql = "INSERT INTO Zakaznik (id, jmeno, prijmeni, email, telefonniCislo, heslo) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {

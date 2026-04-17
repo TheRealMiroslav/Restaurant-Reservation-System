@@ -16,11 +16,11 @@ public class DatabaseManager {
 
             stmt.execute("CREATE TABLE IF NOT EXISTS Restaurace (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "nazev VARCHAR(100), " + "adresa VARCHAR(255), " + "telefonniCislo VARCHAR(20), " + "email VARCHAR(100), " + "prumerneHodnoceni DOUBLE DEFAULT 0.0)");
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS Stul (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "restaurace_id INT, " + "kod_stolu VARCHAR(20), " + "kapacita INT, " + "FOREIGN KEY (restaurace_id) REFERENCES Restaurace(id))");
+            stmt.execute("CREATE TABLE IF NOT EXISTS Stul (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "restauraceId INT, " + "kodStolu VARCHAR(20), " + "kapacita INT, " + "FOREIGN KEY (restauraceId) REFERENCES Restaurace(id))");
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS Rezervace (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "zakaznik_id INT, " + "stul_id INT, " + "cas_zacatek TIMESTAMP, " + "cas_konec TIMESTAMP, " + "poznamky VARCHAR(255), " + "stav VARCHAR(20) DEFAULT 'NEPOTVRZENA', " + "FOREIGN KEY (zakaznik_id) REFERENCES Zakaznik(id), " + "FOREIGN KEY (stul_id) REFERENCES Stul(id))");
+            stmt.execute("CREATE TABLE IF NOT EXISTS Rezervace (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "zakaznikId INT, " + "stulId INT, " + "casZacatek TIMESTAMP, " + "casKonec TIMESTAMP, " + "poznamky VARCHAR(255), " + "pocetOsob int, " + "stav VARCHAR(20) DEFAULT 'NEPOTVRZENA', " + "FOREIGN KEY (zakaznikId) REFERENCES Zakaznik(id), " + "FOREIGN KEY (stulId) REFERENCES Stul(id))");
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS Recenze (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "zakaznik_id INT, " + "restaurace_id INT, " + "komentar VARCHAR(255), " + "hodnoceni DOUBLE, " + "FOREIGN KEY (zakaznik_id) REFERENCES Zakaznik(id), " + "FOREIGN KEY (restaurace_id) REFERENCES Restaurace(id))");
+            stmt.execute("CREATE TABLE IF NOT EXISTS Recenze (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "zakaznikId INT, " + "restauraceId INT, " + "komentar VARCHAR(255), " + "hodnoceni DOUBLE, " + "FOREIGN KEY (zakaznikId) REFERENCES Zakaznik(id), " + "FOREIGN KEY (restauraceId) REFERENCES Restaurace(id))");
 
             System.out.println("Databáze je připravena!");
 

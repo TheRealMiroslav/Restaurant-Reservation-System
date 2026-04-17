@@ -10,7 +10,7 @@ import java.util.List;
 public class RezervaceDaoImpl implements RezervaceDao {
     @Override
     public void vytvoritRezervaci(Rezervace rezervace) throws Exception {
-        String sql = "INSERT INTO Rezervace (zakaznikId, stulId, casZacatek, casKonec, poznamky) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Rezervace (zakaznikId, stulId, casZacatek, casKonec, poznamky, stav) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, rezervace.getZakaznikId());
@@ -18,6 +18,8 @@ public class RezervaceDaoImpl implements RezervaceDao {
             stmt.setTimestamp(3, rezervace.getCasZacatek());
             stmt.setTimestamp(4, rezervace.getCasKonec());
             stmt.setString(5, rezervace.getPoznamka());
+            stmt.setInt(6, rezervace.getPocetOsob());
+            stmt.setString(7, rezervace.getStavNazev());
 
             int rowsAffected = stmt.executeUpdate();
 
@@ -66,6 +68,7 @@ public class RezervaceDaoImpl implements RezervaceDao {
                 rezervace.setCasZacatek(rs.getTimestamp("casZacatek"));
                 rezervace.setCasKonec(rs.getTimestamp("casKonec"));
                 rezervace.setPoznamka(rs.getString("poznamky"));
+                rezervace.setPocetOsob(rs.getInt("pocetOsob"));
                 rezervace.setStav(stavZRetezce(rs.getString("stav")));
 
                 rezervaceList.add(rezervace);
