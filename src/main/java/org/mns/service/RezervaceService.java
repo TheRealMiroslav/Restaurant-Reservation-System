@@ -21,7 +21,7 @@ public class RezervaceService {
 
     // UC-03
     public Rezervace vytvorRezervaci(Zakaznik zakaznik, Stul stul, Timestamp od, Timestamp do_, String poznamka, int pocetOsob) throws Exception {
-        // nebo mohu sem jen predavat ID stolu nebo zakaznika a udělat to pomocí DAO, ale to by bylo zbytečné, když už mám objekty.
+        // nebo mohu sem jen predavat ID stolu nebo zakaznika a udělat to pomocí DAO, ale to by bylo zbytečné, když už mám objekty./mo
 
         // UC-03 krok 7 - kontrola kolize
         boolean dostupny = stulDao.jeStulDostupny(stul.getId(), od.toString(), do_.toString());
