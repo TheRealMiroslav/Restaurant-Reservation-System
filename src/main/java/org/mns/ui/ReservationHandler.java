@@ -18,6 +18,8 @@ import static org.mns.ui.CliHelper.subtitle;
  * Obsluhuje UC-02 Vyhledat restauraci, UC-03 Vytvořit rezervaci, UC-04 Zrušit rezervaci.
  */
 public class ReservationHandler {
+
+    // TODO: možná LocalDateTime + DateTimeFormatter místo Timestamp + SimpleDateFormat
     private static final SimpleDateFormat FMT = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     private final Scanner sc;
@@ -63,6 +65,7 @@ public class ReservationHandler {
         }
     }
 
+    // TODO: Uprava logiky -> nejdříve čas a počet osob pak stoly
     public void createReservation() {
         title("Vytvoření rezervace");
 

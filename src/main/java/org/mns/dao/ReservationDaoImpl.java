@@ -1,6 +1,7 @@
 package org.mns.dao;
 
 import org.mns.db.DatabaseManager;
+import org.mns.factory.ReservationStateFactory;
 import org.mns.model.Reservation;
 import org.mns.model.state.*;
 
@@ -57,7 +58,8 @@ public class ReservationDaoImpl implements ReservationDao {
                 reservation.setEndTime(rs.getTimestamp("end_time"));
                 reservation.setComment(rs.getString("notes"));
                 reservation.setNumOfPeople(rs.getInt("person_count"));
-                reservation.setStatus(getStatus(rs.getString("status")));
+
+                reservation.setStatus(ReservationStateFactory.getState(rs.getString("status")));
 
                 reservationList.add(reservation);
             }
@@ -80,14 +82,5 @@ public class ReservationDaoImpl implements ReservationDao {
         }
 
         return false;
-    }
-
-    private ReservationState getStatus(String status) {
-        return switch (status) {
-            case "POTVRZENA" -> new ConfirmedReservationState();
-            case "ZRUSENA" -> new CancelledReservationState();
-            case "PROBEHLA" -> new PassedReservationState();
-            default -> new UnconfirmedReservationState();
-        };
     }
 }

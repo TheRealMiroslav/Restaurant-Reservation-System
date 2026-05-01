@@ -15,13 +15,13 @@ public class CustomerService {
     }
 
     public Optional<Customer> login(LoginCredentials credentials) throws Exception {
-        Optional<Customer> customer = customerDao.getByEmail(credentials.getEmail());
+        Optional<Customer> customer = customerDao.getByEmail(credentials.email());
 
         if (customer.isEmpty()) {
             return Optional.empty();
         }
 
-        if (!customer.get().getPassword().equals(credentials.getPassword())) {
+        if (!customer.get().getPassword().equals(credentials.password())) {
             return Optional.empty();
         }
 

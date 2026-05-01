@@ -2,7 +2,7 @@ package org.mns.service;
 
 import org.mns.dao.ReservationDao;
 import org.mns.dao.TableDao;
-import org.mns.factory.ReservationFactory;
+import org.mns.builder.ReservationBuilder;
 import org.mns.model.Reservation;
 import org.mns.model.Table;
 import org.mns.model.Customer;
@@ -28,7 +28,18 @@ public class ReservationService {
             throw new IllegalArgumentException("Stůl není dostupný v daném časovém období");
         }
 
-        Reservation reservation = ReservationFactory.createNewReservation(customer, table, from, to, comment, numOfPeople);
+        if (numOfPeople > table.getCapacity()) {
+            throw new IllegalArgumentException("Počet osob přesahuje kapacitu stolu.");
+        }
+
+        Reservation reservation = new ReservationBuilder()
+                .setCustomer(customer.getId())
+                .setTable(table.getId())
+                .setStartTime(from)
+                .setEndTime(to)
+                .setComment(comment)
+                .setNumOfPeople(numOfPeople)
+                .build();
 
         reservationDao.create(reservation);
     }

@@ -49,9 +49,9 @@ public class ReviewDaoImpl implements ReviewDao {
         return getReviews(customerId, reviewList, sql);
     }
 
-    private List<Review> getReviews(int customerId, List<Review> reviewList, String sql) throws Exception {
+    private List<Review> getReviews(int id, List<Review> reviewList, String sql) throws Exception {
         try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, customerId);
+            stmt.setInt(1, id);
 
             var rs = stmt.executeQuery();
 
