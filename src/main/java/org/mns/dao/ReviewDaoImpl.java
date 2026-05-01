@@ -9,7 +9,7 @@ import java.util.List;
 public class ReviewDaoImpl implements ReviewDao {
     @Override
     public void createReview(Review review) throws Exception {
-        String sql = "INSERT INTO Recenze (zakaznikId, restauraceId, komentar, hodnoceni) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO review (customer_id, restaurant_id, comment, rating) VALUES (?, ?, ?, ?)";
 
         try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, review.getCustomerId());
@@ -23,7 +23,7 @@ public class ReviewDaoImpl implements ReviewDao {
 
     @Override
     public void deleteReview(int id) throws Exception {
-        String sql = "DELETE FROM Recenze WHERE id LIKE ?";
+        String sql = "DELETE FROM review WHERE id LIKE ?";
 
         try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -35,7 +35,7 @@ public class ReviewDaoImpl implements ReviewDao {
     @Override
     public List<Review> getReviewsByRestaurantId(int restaurantId) throws Exception {
         List<Review> reviewList = new ArrayList<>();
-        String sql = "SELECT * FROM Recenze WHERE restauraceId = ?";
+        String sql = "SELECT * FROM review WHERE restaurant_id = ?";
 
         try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, restaurantId);
@@ -45,10 +45,10 @@ public class ReviewDaoImpl implements ReviewDao {
             while (rs.next()) {
                 Review r = new Review();
                 r.setId(rs.getInt("id"));
-                r.setCustomerId(rs.getInt("zakaznikId"));
-                r.setRestaurantId(rs.getInt("restauraceId"));
-                r.setComment(rs.getString("komentar"));
-                r.setRating(rs.getDouble("hodnoceni"));
+                r.setCustomerId(rs.getInt("customer_id"));
+                r.setRestaurantId(rs.getInt("restaurant_id"));
+                r.setComment(rs.getString("comment"));
+                r.setRating(rs.getDouble("rating"));
                 reviewList.add(r);
             }
         }

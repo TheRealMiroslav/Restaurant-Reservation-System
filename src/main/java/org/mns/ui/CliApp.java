@@ -68,7 +68,7 @@ public class CliApp {
         switch (readNumber(sc)) {
             case 1 -> authHandler.handleLogin();
             case 2 -> authHandler.handleRegistration();
-            case 3 -> end();
+            case 0 -> end();
             default -> error("Neplatná volba, zkuste znovu.");
         }
     }

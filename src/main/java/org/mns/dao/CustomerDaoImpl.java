@@ -12,7 +12,7 @@ public class CustomerDaoImpl implements CustomerDao {
 
     @Override
     public Optional<Customer> getByEmail(String email) throws Exception {
-        String sql = "SELECT * FROM Zakaznik WHERE email LIKE ?";
+        String sql = "SELECT * FROM customer WHERE email LIKE ?";
 
         try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
@@ -27,7 +27,7 @@ public class CustomerDaoImpl implements CustomerDao {
 
     @Override
     public Optional<Customer> getById(int id) throws Exception {
-        String sql = "SELECT * FROM Zakaznik WHERE id LIKE ?";
+        String sql = "SELECT * FROM customer WHERE id LIKE ?";
 
         try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -47,11 +47,11 @@ public class CustomerDaoImpl implements CustomerDao {
             Customer customer = new Customer();
 
             customer.setId(rs.getInt("id"));
-            customer.setFirstName(rs.getString("jmeno"));
-            customer.setLastName(rs.getString("prijmeni"));
+            customer.setFirstName(rs.getString("first_name"));
+            customer.setLastName(rs.getString("last_name"));
             customer.setEmail(rs.getString("email"));
-            customer.setPhoneNumber(rs.getString("telefonniCislo"));
-            customer.setPassword(rs.getString("heslo"));
+            customer.setPhoneNumber(rs.getString("phone_number"));
+            customer.setPassword(rs.getString("password"));
 
             return Optional.of(customer);
         }
@@ -60,7 +60,7 @@ public class CustomerDaoImpl implements CustomerDao {
 
     @Override
     public void create(Customer customer) throws Exception {
-        String sql = "INSERT INTO Zakaznik (id, jmeno, prijmeni, email, telefonniCislo, heslo) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO customer (id, first_name, last_name, email, phone_number, password) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customer.getId());

@@ -10,8 +10,7 @@ import java.util.List;
 public class ReservationDaoImpl implements ReservationDao {
     @Override
     public void create(Reservation reservation) throws Exception {
-        String sql = "INSERT INTO Rezervace (zakaznikId, stulId, casZacatek, casKonec, poznamky, pocetOsob, stav) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
+        String sql = "INSERT INTO reservation (customer_id, table_id, start_time, end_time, notes, person_count, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, reservation.getCustomerId());
@@ -34,7 +33,7 @@ public class ReservationDaoImpl implements ReservationDao {
 
     @Override
     public void cancel(int id) throws Exception {
-        String sql = "UPDATE Rezervace SET stav = 'ZRUSENA' WHERE id = ?";
+        String sql = "UPDATE reservation SET status = 'ZRUSENA' WHERE id = ?";
 
         try (Connection conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -53,7 +52,7 @@ public class ReservationDaoImpl implements ReservationDao {
     public List<Reservation> getReservationByCustomerId(int customerId) throws Exception {
         List<Reservation> reservationList = new java.util.ArrayList<>();
 
-        String sql = "SELECT * FROM Rezervace WHERE zakaznikId = ?";
+        String sql = "SELECT * FROM reservation WHERE customer_id = ?";
 
         try (Connection conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
@@ -64,13 +63,13 @@ public class ReservationDaoImpl implements ReservationDao {
                 Reservation reservation = new Reservation();
 
                 reservation.setId(rs.getInt("id"));
-                reservation.setCustomerId(rs.getInt("zakaznikId"));
-                reservation.setTableId(rs.getInt("tableId"));
-                reservation.setStartTime(rs.getTimestamp("casZacatek"));
-                reservation.setEndTime(rs.getTimestamp("casKonec"));
-                reservation.setComment(rs.getString("poznamky"));
-                reservation.setNumOfPeople(rs.getInt("pocetOsob"));
-                reservation.setStatus(getStatus(rs.getString("stav")));
+                reservation.setCustomerId(rs.getInt("customer_id"));
+                reservation.setTableId(rs.getInt("table_id"));
+                reservation.setStartTime(rs.getTimestamp("start_time"));
+                reservation.setEndTime(rs.getTimestamp("end_time"));
+                reservation.setComment(rs.getString("notes"));
+                reservation.setNumOfPeople(rs.getInt("person_count"));
+                reservation.setStatus(getStatus(rs.getString("status")));
 
                 reservationList.add(reservation);
             }
