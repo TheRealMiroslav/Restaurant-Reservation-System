@@ -1,23 +1,23 @@
 package org.mns.ui;
 
-import org.mns.model.Zakaznik;
+import org.mns.model.Customer;
 
 public class SessionContext {
-    private Zakaznik prihlasenyZakaznik;
+    private Customer loggedInUser;
 
-    public boolean isPrihlasen() {
-        return prihlasenyZakaznik != null;
+    public boolean isLoggedIn() {
+        return loggedInUser != null;
     }
 
-    public Zakaznik getZakaznik() {
-        return prihlasenyZakaznik;
+    public Customer getLoggedInUser() {
+        return loggedInUser;
     }
 
-    public void setPrihlasenyZakaznik(Zakaznik zakaznik) {
-        this.prihlasenyZakaznik = zakaznik;
+    public void setLoggedInUser(Customer customer) {
+        this.loggedInUser = customer;
     }
 
-    public void odhlasit() {
-        this.prihlasenyZakaznik = null;
+    public void logOut() {
+        this.loggedInUser = null;
     }
 }

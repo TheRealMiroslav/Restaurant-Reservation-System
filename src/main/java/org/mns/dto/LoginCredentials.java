@@ -5,20 +5,20 @@ package org.mns.dto;
  * Důvod existence: service nepotřebuje celý objekt Zakaznik jen proto,
  * aby ověřila email + heslo.
  */
-public class PrihlaseniUdaje {
+public class LoginCredentials {
     private final String email;
-    private final String heslo;
+    private final String password;
 
-    public PrihlaseniUdaje(String email, String heslo) {
+    public LoginCredentials(String email, String password) {
         this.email = email;
-        this.heslo = heslo;
+        this.password = password;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public String getHeslo() {
-        return heslo;
+    public String getPassword() {
+        return password;
     }
 }

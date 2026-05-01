@@ -9,7 +9,7 @@ public class DatabaseManager {
     private static final String USER = "sa";
     private static final String PASSWORD = "";
 
-    public static void inicializujDatabazi() {
+    public static void initialize() {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD); Statement stmt = conn.createStatement()) {
 
             stmt.execute("CREATE TABLE IF NOT EXISTS Zakaznik (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "jmeno VARCHAR(100), " + "prijmeni VARCHAR(100), " + "email VARCHAR(100) UNIQUE, " + "telefonniCislo VARCHAR(20), " + "heslo VARCHAR(255))");

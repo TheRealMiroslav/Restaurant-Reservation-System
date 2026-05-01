@@ -2,15 +2,17 @@ package org.mns.dao;
 
 import org.mns.db.DatabaseManager;
 
-public class StulDaoImpl implements StulDao {
+import java.sql.Timestamp;
+
+public class TableDaoImpl implements TableDao {
     @Override
-    public boolean jeStulDostupny(int stulId, String casZacatek, String casKonec) throws Exception {
+    public boolean isTableAvailable(int tableId, Timestamp startTime, Timestamp endTime) throws Exception {
         String sql = "SELECT COUNT(*) AS pocet FROM Rezervace " + "WHERE stulId = ? " + "AND stav != 'Zrusena' " + "AND cas_zacatek < ? AND cas_konec > ?";
 
         try (var conn = DatabaseManager.getConnection(); var pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, stulId);
-            pstmt.setString(2, casKonec);
-            pstmt.setString(3, casZacatek);
+            pstmt.setInt(1, tableId);
+            pstmt.setTimestamp(2, startTime);
+            pstmt.setTimestamp(3, endTime);
 
             var rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -22,6 +24,6 @@ public class StulDaoImpl implements StulDao {
             throw e;
         }
 
-        return false; // Pokud dojde k chybě, považujeme stůl za nedostupný
+        return false;
     }
 }
