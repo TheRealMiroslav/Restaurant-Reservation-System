@@ -7,9 +7,11 @@ import java.util.List;
 public interface ReservationDao {
     void create(Reservation reservation) throws Exception;
 
-    //void edit(int reservationId, Reservation reservation);
+    // void edit(int reservationId, Reservation reservation);
 
-    void cancel(int id) throws Exception;
+    void updateStatus(Reservation reservation) throws Exception;
 
     List<Reservation> getReservationByCustomerId(int customerId) throws Exception;
+
+    boolean checkForReservation(int customerId, int restaurantId) throws Exception;
 }

@@ -12,7 +12,7 @@ public class CustomerDaoImpl implements CustomerDao {
 
     @Override
     public Optional<Customer> getByEmail(String email) throws Exception {
-        String sql = "SELECT * FROM customer WHERE email LIKE ?";
+        String sql = "SELECT * FROM customer WHERE email = ?";
 
         try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, email);
@@ -27,7 +27,7 @@ public class CustomerDaoImpl implements CustomerDao {
 
     @Override
     public Optional<Customer> getById(int id) throws Exception {
-        String sql = "SELECT * FROM customer WHERE id LIKE ?";
+        String sql = "SELECT * FROM customer WHERE id = ?";
 
         try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -59,16 +59,15 @@ public class CustomerDaoImpl implements CustomerDao {
     }
 
     @Override
-    public void create(Customer customer) throws Exception {
-        String sql = "INSERT INTO customer (id, first_name, last_name, email, phone_number, password) VALUES (?, ?, ?, ?, ?, ?)";
+    public void create(String firstName, String lastName, String email, String phoneNumber, String password) throws Exception {
+        String sql = "INSERT INTO customer (first_name, last_name, email, phone_number, password) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, customer.getId());
-            stmt.setString(2, customer.getFirstName());
-            stmt.setString(3, customer.getLastName());
-            stmt.setString(4, customer.getEmail());
-            stmt.setString(5, customer.getPhoneNumber());
-            stmt.setString(6, customer.getPassword());
+            stmt.setString(1, firstName);
+            stmt.setString(2, lastName);
+            stmt.setString(3, email);
+            stmt.setString(4, phoneNumber);
+            stmt.setString(5, password);
 
             stmt.executeUpdate();
         }

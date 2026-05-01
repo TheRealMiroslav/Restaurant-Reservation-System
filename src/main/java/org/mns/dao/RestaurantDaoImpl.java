@@ -15,7 +15,7 @@ import java.util.Optional;
 public class RestaurantDaoImpl implements RestaurantDao {
 
     @Override
-    public Optional<Restaurant> getRestaurantById(int id) throws Exception {
+    public Optional<Restaurant> getById(int id) throws Exception {
         String sql = "SELECT * FROM restaurant WHERE id LIKE ?";
 
         try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -76,28 +76,29 @@ public class RestaurantDaoImpl implements RestaurantDao {
         restaurant.setName(rs.getString("name"));
         restaurant.setAddress(rs.getString("address"));
         restaurant.setPhoneNumber(rs.getString("phone_number"));
+        restaurant.setEmail(rs.getString("email"));
         restaurant.setAverageRating(rs.getDouble("average_rating"));
 
         return restaurant;
     }
 
     @Override
-    public List<Table> getTablesByRestaurantId(int restauraceId) throws Exception {
-        List<Table> stoly = new ArrayList<>();
+    public List<Table> getTablesByRestaurantId(int restaurantId) throws Exception {
+        List<Table> tableList = new ArrayList<>();
         String sql = "SELECT * FROM restaurant_table WHERE restaurant_id = ?";
 
         try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, restauraceId);
+            stmt.setInt(1, restaurantId);
             var rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Table s = new Table(rs.getString("table_code"), rs.getInt("capacity"));
                 s.setId(rs.getInt("id"));
-                stoly.add(s);
+                tableList.add(s);
             }
         }
 
-        return stoly;
+        return tableList;
     }
 
     @Override

@@ -31,7 +31,7 @@ public class CliApp {
         CustomerService customerService = new CustomerService(customerDao);
         ReservationService reservationService = new ReservationService(reservationDao, tableDao);
         RestaurantService restaurantService = new RestaurantService(restaurantDao);
-        ReviewService reviewService = new ReviewService(reviewDao, restaurantDao);
+        ReviewService reviewService = new ReviewService(reviewDao, restaurantDao, reservationDao);
 
         this.authHandler = new AuthHandler(sc, session, customerService);
         this.reservationHandler = new ReservationHandler(sc, session, reservationService, restaurantService);
@@ -40,9 +40,9 @@ public class CliApp {
 
     public void start() {
         System.out.println();
-        System.out.println(BOLD + "╔══════════════════════════════════════╗" + RESET);
-        System.out.println(BOLD + "║   Rezervační systém restaurací  v1.0 ║" + RESET);
-        System.out.println(BOLD + "╚══════════════════════════════════════╝" + RESET);
+        System.out.println(BOLD + "╔════════════════════════════════════════╗" + RESET);
+        System.out.println(BOLD + "║   Rezervační systém restaurací  v1.0   ║" + RESET);
+        System.out.println(BOLD + "╚════════════════════════════════════════╝" + RESET);
 
         while (true) {
             try {
@@ -80,7 +80,8 @@ public class CliApp {
         System.out.println("  2) Vytvořit rezervaci");
         System.out.println("  3) Moje rezervace");
         System.out.println("  4) Napsat recenzi");
-        System.out.println("  5) Odhlásit se");
+        System.out.println("  5) Moje recenze");
+        System.out.println("  6) Odhlásit se");
         System.out.println("  0) Ukončit aplikaci");
         nextLine();
 
@@ -91,7 +92,8 @@ public class CliApp {
             case 2 -> reservationHandler.createReservation();
             case 3 -> reservationHandler.showMyReservations();
             case 4 -> reviewHandler.handleCreateReview();
-            case 5 -> logout();
+            case 5 -> reviewHandler.showMyReviews();
+            case 6 -> logout();
             case 0 -> end();
             default -> error("Neplatná volba, zkuste znovu.");
         }

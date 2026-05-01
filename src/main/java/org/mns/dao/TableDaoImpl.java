@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 public class TableDaoImpl implements TableDao {
     @Override
     public boolean isTableAvailable(int tableId, Timestamp startTime, Timestamp endTime) throws Exception {
-        String sql = "SELECT COUNT(*) AS pocet FROM reservation " + "WHERE table_id = ? " + "AND status != 'Zrusena' " + "AND start_time < ? AND end_time > ?";
+        String sql = "SELECT COUNT(*) AS pocet FROM reservation " + "WHERE table_id = ? " + "AND status != 'ZRUSENA' " + "AND start_time < ? AND end_time > ?";
 
         try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, tableId);

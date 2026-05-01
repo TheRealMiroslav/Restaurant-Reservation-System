@@ -21,30 +21,18 @@ public class ReservationDaoImpl implements ReservationDao {
             stmt.setInt(6, reservation.getNumOfPeople());
             stmt.setString(7, reservation.getStatus().getName());
 
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Rezervace byla úspěšně vytvořena.");
-            } else {
-                System.out.println("Nepodařilo se vytvořit rezervaci.");
-            }
+            stmt.executeUpdate();
         }
     }
 
     @Override
-    public void cancel(int id) throws Exception {
-        String sql = "UPDATE reservation SET status = 'ZRUSENA' WHERE id = ?";
+    public void updateStatus(Reservation reservation) throws Exception {
+        String sql = "UPDATE reservation SET status = ? WHERE id = ?";
 
         try (Connection conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Rezervace byla úspěšně zrušena.");
-            } else {
-                System.out.println("Nepodařilo se zrušit rezervaci.");
-            }
+            stmt.setString(1, reservation.getStatus().getName());
+            stmt.setInt(2, reservation.getId());
+            stmt.executeUpdate();
         }
     }
 
@@ -76,6 +64,22 @@ public class ReservationDaoImpl implements ReservationDao {
         }
 
         return reservationList;
+    }
+
+    public boolean checkForReservation(int customerId, int restaurantId) throws Exception {
+        String sql = "SELECT COUNT(*) AS reservationCount FROM reservation r " + "JOIN restaurant_table s ON r.table_id = s.id " + "WHERE r.customer_id = ? AND s.restaurant_id = ? AND r.status = 'PROBEHLA'";
+
+        try (Connection conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, customerId);
+            stmt.setInt(2, restaurantId);
+
+            var rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("reservationCount") > 0;
+            }
+        }
+
+        return false;
     }
 
     private ReservationState getStatus(String status) {

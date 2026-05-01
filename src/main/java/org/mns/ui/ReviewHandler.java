@@ -1,6 +1,8 @@
 package org.mns.ui;
 
+import org.mns.model.Reservation;
 import org.mns.model.Restaurant;
+import org.mns.model.Review;
 import org.mns.service.RestaurantService;
 import org.mns.service.ReviewService;
 
@@ -29,10 +31,13 @@ public class ReviewHandler {
         System.out.print("Vyhledat restauraci (název/adresa): ");
         String searchedText = sc.nextLine().trim();
 
+        info("Vyhledávání restaurací...");
+
         try {
             List<Restaurant> restaurant = restaurantService.searchRestaurants(searchedText);
 
             if (restaurant.isEmpty()) {
+                nextLine();
                 info("Žádná restaurace nenalezena.");
                 return;
             }
@@ -87,6 +92,9 @@ public class ReviewHandler {
                 return;
             }
 
+            info("Zpracovávání recenze...");
+            nextLine();
+
             reviewService.createReview(session.getLoggedInUser().getId(), selectedRestaurant.getId(), rating, comment);
 
             success("Recenze byla úspěšně odeslána. Děkujeme za hodnocení!");
@@ -95,6 +103,46 @@ public class ReviewHandler {
             error(e.getMessage()); // nemá proběhlou rezervaci (UC-05 výjimka E1)
         } catch (Exception e) {
             error("Chyba při odesílání recenze: " + e.getMessage());
+        }
+    }
+
+    public void showMyReviews() {
+        info("Hledání recenzí...");
+
+        try {
+            List<Review> reviews = reviewService.getCustomerReviews(session.getLoggedInUser().getId());
+
+            title("Moje recenze");
+
+            if (reviews.isEmpty()) {
+                info("Nemáte žádné recenze.");
+                return;
+            }
+
+            showReviews(reviews);
+
+            subtitle("Akce");
+            System.out.println("  0) Zpět");
+
+            nextLine();
+            System.out.print("Volba: ");
+
+            if (readNumber(sc) != 0) {
+                error("Neplatná volba.");
+            }
+
+        } catch (Exception e) {
+            error("Chyba při načítání rezervací: " + e.getMessage());
+        }
+    }
+
+    private void showReviews(List<org.mns.model.Review> reviewList) {
+        for (int i = 0; i < reviewList.size(); i++) {
+            org.mns.model.Review r = reviewList.get(i);
+            System.out.printf("  %d) Hodnocení: %s%n", i + 1, toStars(r.getRating()));
+            if (r.getComment() != null && !r.getComment().isBlank()) {
+                System.out.printf("     Komentář: %s%n", r.getComment());
+            }
         }
     }
 }

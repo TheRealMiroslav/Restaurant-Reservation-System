@@ -6,8 +6,6 @@ import org.mns.model.Customer;
 
 import java.sql.Timestamp;
 
-;
-
 public class ReservationFactory {
     public static Reservation createNewReservation(Customer customer, Table table, Timestamp from, Timestamp to, String comment, int numOfPeople) {
         // Validace na jednom místě

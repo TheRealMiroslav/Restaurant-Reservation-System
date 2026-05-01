@@ -11,7 +11,7 @@ public interface RestaurantDao {
     //void upravitRestauraci(Restaurace restaurace);
     //void smazatRestauraci(int id);
 
-    public Optional<Restaurant> getRestaurantById(int id) throws Exception;
+    public Optional<Restaurant> getById(int id) throws Exception;
 
     public List<Restaurant> getAll() throws Exception;
 

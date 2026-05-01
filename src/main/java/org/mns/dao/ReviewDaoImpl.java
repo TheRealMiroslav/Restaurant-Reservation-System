@@ -3,6 +3,7 @@ package org.mns.dao;
 import org.mns.db.DatabaseManager;
 import org.mns.model.Review;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class ReviewDaoImpl implements ReviewDao {
 
     @Override
     public void deleteReview(int id) throws Exception {
-        String sql = "DELETE FROM review WHERE id LIKE ?";
+        String sql = "DELETE FROM review WHERE id = ?";
 
         try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -37,8 +38,20 @@ public class ReviewDaoImpl implements ReviewDao {
         List<Review> reviewList = new ArrayList<>();
         String sql = "SELECT * FROM review WHERE restaurant_id = ?";
 
+        return getReviews(restaurantId, reviewList, sql);
+    }
+
+    @Override
+    public List<Review> getReviewsByCustomerId(int customerId) throws Exception {
+        List<Review> reviewList = new ArrayList<>();
+        String sql = "SELECT * FROM review WHERE customer_id = ?";
+
+        return getReviews(customerId, reviewList, sql);
+    }
+
+    private List<Review> getReviews(int customerId, List<Review> reviewList, String sql) throws Exception {
         try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, restaurantId);
+            stmt.setInt(1, customerId);
 
             var rs = stmt.executeQuery();
 
@@ -49,6 +62,7 @@ public class ReviewDaoImpl implements ReviewDao {
                 r.setRestaurantId(rs.getInt("restaurant_id"));
                 r.setComment(rs.getString("comment"));
                 r.setRating(rs.getDouble("rating"));
+
                 reviewList.add(r);
             }
         }

@@ -28,13 +28,13 @@ public class CustomerService {
         return customer;
     }
 
-    public void register(Customer customer) throws Exception {
-        Optional<Customer> existing = customerDao.getByEmail(customer.getEmail());
+    public void register(String firstName, String lastName, String email, String phoneNumber, String password) throws Exception {
+        Optional<Customer> existing = customerDao.getByEmail(email);
 
         if (existing.isPresent()) {
             throw new IllegalArgumentException("Účet s tímto e-mailem již existuje.");
         }
 
-        customerDao.create(customer);
+        customerDao.create(firstName, lastName, email, phoneNumber, password);
     }
 }

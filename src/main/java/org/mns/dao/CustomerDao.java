@@ -9,5 +9,5 @@ public interface CustomerDao {
 
     Optional<Customer> getById(int id) throws Exception;
 
-    void create(Customer customer) throws Exception;
+    void create(String firstName, String lastName, String email, String phoneNumber, String password) throws Exception;
 }

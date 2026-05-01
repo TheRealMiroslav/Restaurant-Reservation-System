@@ -10,4 +10,6 @@ public interface ReviewDao {
     void deleteReview(int id) throws Exception;
 
     List<Review> getReviewsByRestaurantId(int restaurantId) throws Exception;
+
+    List<Review> getReviewsByCustomerId(int customerId) throws Exception;
 }

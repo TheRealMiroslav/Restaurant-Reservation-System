@@ -36,8 +36,12 @@ public class ReservationService {
     // UC-04
     public void cancelReservation(Reservation reservation) throws Exception {
         reservation.cancel();
+        reservationDao.updateStatus(reservation);
+    }
 
-        reservationDao.cancel(reservation.getId());
+    public void confirmReservation(Reservation reservation) throws Exception {
+        reservation.confirm();
+        reservationDao.updateStatus(reservation);
     }
 
     public List<Reservation> getCustomerReservations(int customerId) throws Exception {

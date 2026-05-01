@@ -29,6 +29,9 @@ public class AuthHandler {
         System.out.print("Heslo:  ");
         String password = sc.nextLine().trim();
 
+        info("Zpracovávání přihlášení...");
+        nextLine();
+
         try {
             Optional<Customer> customer = customerService.login(new LoginCredentials(email, password));
 
@@ -76,10 +79,12 @@ public class AuthHandler {
             return;
         }
 
-        try {
-            Customer newCustomer = new Customer(0, firstName, lastName, email, phoneNumber, password);
+        nextLine();
+        info("Zpracovávání registrace...");
+        nextLine();
 
-            customerService.register(newCustomer);
+        try {
+            customerService.register(firstName, lastName, email, phoneNumber, password);
 
             success("Registrace proběhla úspěšně. Nyní se přihlaste.");
         } catch (IllegalArgumentException e) {

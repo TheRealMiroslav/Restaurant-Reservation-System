@@ -11,7 +11,6 @@ public class DatabaseManager {
 
     public static void initialize() {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD); Statement stmt = conn.createStatement()) {
-
             stmt.execute("CREATE TABLE IF NOT EXISTS customer (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "first_name VARCHAR(100), " + "last_name VARCHAR(100), " + "email VARCHAR(100) UNIQUE, " + "phone_number VARCHAR(20), " + "password VARCHAR(255))");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS restaurant (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "name VARCHAR(100), " + "address VARCHAR(255), " + "phone_number VARCHAR(20), " + "email VARCHAR(100), " + "average_rating DOUBLE DEFAULT 0.0)");
@@ -22,10 +21,10 @@ public class DatabaseManager {
 
             stmt.execute("CREATE TABLE IF NOT EXISTS review (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "customer_id INT, " + "restaurant_id INT, " + "comment VARCHAR(255), " + "rating DOUBLE, " + "FOREIGN KEY (customer_id) REFERENCES customer(id), " + "FOREIGN KEY (restaurant_id) REFERENCES restaurant(id))");
 
-            System.out.println("Databáze je připravena!");
+            System.out.println("Databáze je připravena!\n");
 
         } catch (Exception e) {
-            System.err.println("Chyba při inicializaci DB: " + e.getMessage());
+            throw new RuntimeException("Nepodařilo se inicializovat databázi: " + e.getMessage(), e);
         }
     }
 

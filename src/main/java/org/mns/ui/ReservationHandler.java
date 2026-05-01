@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import static org.mns.ui.CliHelper.*;
+import static org.mns.ui.CliHelper.subtitle;
 
 /**
  * Obsluhuje UC-02 Vyhledat restauraci, UC-03 Vytvořit rezervaci, UC-04 Zrušit rezervaci.
@@ -42,17 +43,20 @@ public class ReservationHandler {
             return;
         }
 
-        try {
-            List<Restaurant> listOfRestaurants = restaurantService.searchRestaurants(searchedText);
+        info("Vyhledávání restaurací...");
 
-            if (listOfRestaurants.isEmpty()) {
+        try {
+            List<Restaurant> restaurants = restaurantService.searchRestaurants(searchedText);
+
+            if (restaurants.isEmpty()) {
+                nextLine();
                 info("Nebyly nalezeny žádné restaurace pro: \"" + searchedText + "\"");
                 info("Zkuste upravit parametry vyhledávání.");
                 return;
             }
 
-            subtitle("Nalezené restaurace (" + listOfRestaurants.size() + ")");
-            showRestaurants(listOfRestaurants);
+            subtitle("Nalezené restaurace (" + restaurants.size() + ")");
+            showRestaurants(restaurants);
 
         } catch (Exception e) {
             error("Chyba při vyhledávání: " + e.getMessage());
@@ -66,15 +70,21 @@ public class ReservationHandler {
         System.out.print("Vyhledat restauraci (název/adresa): ");
         String searchedText = sc.nextLine().trim();
 
+        info("Vyhledávání restaurací...");
+
         try {
             List<Restaurant> restaurant = restaurantService.searchRestaurants(searchedText);
 
             if (restaurant.isEmpty()) {
+                nextLine();
                 info("Žádná restaurace nenalezena.");
                 return;
             }
 
+            subtitle("Nalezené restaurace (" + restaurant.size() + ")");
             showRestaurants(restaurant);
+            nextLine();
+
             System.out.print("Vyberte číslo restaurace: ");
             int selectedRestaurantIndex = readNumber(sc);
 
@@ -85,10 +95,12 @@ public class ReservationHandler {
 
             Restaurant selectedRestaurant = restaurant.get(selectedRestaurantIndex - 1);
 
-            // Výběr stolu
-            subtitle("Dostupné stoly — " + selectedRestaurant.getName());
+            info("Načítání stolů...");
 
+            // Výběr stolu
             List<Table> ListOfTables = restaurantService.getTables(selectedRestaurant.getId());
+
+            subtitle("Dostupné stoly — " + selectedRestaurant.getName());
 
             if (ListOfTables.isEmpty()) {
                 info("Tato restaurace nemá evidované žádné stoly.");
@@ -155,6 +167,9 @@ public class ReservationHandler {
                 return;
             }
 
+            info("Zpracovávání rezervace...");
+            nextLine();
+
             reservationService.createReservation(session.getLoggedInUser(), selectedTable, from, to, comment, numOfPeople);
 
             success("Rezervace byla úspěšně vytvořena!");
@@ -167,10 +182,12 @@ public class ReservationHandler {
     }
 
     public void showMyReservations() {
-        title("Moje rezervace");
+        info("Hledání rezervací...");
 
         try {
             List<Reservation> reservation = reservationService.getCustomerReservations(session.getLoggedInUser().getId());
+
+            title("Moje rezervace");
 
             if (reservation.isEmpty()) {
                 info("Nemáte žádné rezervace.");
@@ -180,18 +197,55 @@ public class ReservationHandler {
             showReservations(reservation);
 
             subtitle("Akce");
-            System.out.println("  1) Zrušit rezervaci");
+            System.out.println("  1) Potvrdit rezervaci");
+            System.out.println("  2) Zrušit rezervaci");
             System.out.println("  0) Zpět");
+
+            nextLine();
             System.out.print("Volba: ");
 
             switch (readNumber(sc)) {
-                case 1 -> cancelReservation(reservation);
+                case 1 -> confirmReservation(reservation);
+                case 2 -> cancelReservation(reservation);
                 case 0 -> { /* zpět */ }
                 default -> error("Neplatná volba.");
             }
 
         } catch (Exception e) {
             error("Chyba při načítání rezervací: " + e.getMessage());
+        }
+    }
+
+    private void confirmReservation(List<Reservation> reservation) {
+        System.out.print("Zadejte číslo rezervace k potvrzení: ");
+        int selection = readNumber(sc);
+
+        if (selection < 1 || selection > reservation.size()) {
+            error("Neplatná volba.");
+            return;
+        }
+
+        Reservation selected = reservation.get(selection - 1);
+
+        System.out.print("Opravdu chcete potvrdit tuto rezervaci? (a/n): ");
+        String confirmation = sc.nextLine().trim().toLowerCase();
+
+        if (!confirmation.equals("a")) {
+            info("Akce zrušena.");
+            return;
+        }
+
+        info("Zpracovávání potvrzení rezervace");;
+        nextLine();
+
+        try {
+            reservationService.confirmReservation(selected);
+
+            success("Rezervace byla úspěšně potvrzena.");
+        } catch (IllegalStateException e) {
+            error(e.getMessage()); // State pattern vyhodí výjimku pro nepovolenou akci
+        } catch (Exception e) {
+            error("Chyba při potvrzování rezervace: " + e.getMessage());
         }
     }
 
@@ -214,6 +268,9 @@ public class ReservationHandler {
             return;
         }
 
+        info("Zpracovávání zrušení rezervace");
+        nextLine();
+
         try {
             reservationService.cancelReservation(selected);
 
@@ -225,30 +282,28 @@ public class ReservationHandler {
         }
     }
 
-    private void showRestaurants(List<Restaurant> seznam) {
-        for (int i = 0; i < seznam.size(); i++) {
-            Restaurant r = seznam.get(i);
+    private void showRestaurants(List<Restaurant> restaurantList) {
+        for (int i = 0; i < restaurantList.size(); i++) {
+            Restaurant r = restaurantList.get(i);
             System.out.printf("  %d) %-30s %s%n", i + 1, r.getName(), toStars(r.getAverageRating()));
             System.out.printf("     %s%n", r.getAddress());
         }
-        nextLine();
     }
 
-    private void showTables(List<Table> stoly) {
-        for (int i = 0; i < stoly.size(); i++) {
-            Table s = stoly.get(i);
+    private void showTables(List<Table> tableList) {
+        for (int i = 0; i < tableList.size(); i++) {
+            Table s = tableList.get(i);
             System.out.printf("  %d) Stůl %-8s — kapacita %d osob%n", i + 1, s.getCode(), s.getCapacity());
         }
         nextLine();
     }
 
-    private void showReservations(List<Reservation> seznam) {
-        for (int i = 0; i < seznam.size(); i++) {
-            Reservation r = seznam.get(i);
+    private void showReservations(List<Reservation> reservationList) {
+        for (int i = 0; i < reservationList.size(); i++) {
+            Reservation r = reservationList.get(i);
             System.out.printf("  %d) Stůl ID: %-4d  %s → %s  [%s]%n", i + 1, r.getTableId(), FMT.format(r.getStartTime()), FMT.format(r.getEndTime()), r.getStatus().getName());
             if (r.getComment() != null && !r.getComment().isBlank())
                 System.out.printf("          Poznámka: %s%n", r.getComment());
         }
-        nextLine();
     }
 }
