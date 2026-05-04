@@ -18,6 +18,10 @@ public class Reservation {
 
     protected ReservationState status;
 
+    private String restaurantName;
+    private String tableCode;
+    private int tableCapacity;
+
     public Reservation(int id, int customerId, int tableId, Timestamp startTime, Timestamp endTime, String comment, int numOfPeople) {
         this.id = id;
         this.customerId = customerId;
@@ -117,5 +121,29 @@ public class Reservation {
 
     public void setStatus(ReservationState status) {
         this.status = status;
+    }
+
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
+
+    public String getTableCode() {
+        return tableCode;
+    }
+
+    public void setTableCode(String tableCode) {
+        this.tableCode = tableCode;
+    }
+
+    public int getTableCapacity() {
+        return tableCapacity;
+    }
+
+    public void setTableCapacity(int tableCapacity) {
+        this.tableCapacity = tableCapacity;
     }
 }

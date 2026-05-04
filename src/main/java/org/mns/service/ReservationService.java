@@ -58,4 +58,8 @@ public class ReservationService {
     public List<Reservation> getCustomerReservations(int customerId) throws Exception {
         return reservationDao.getReservationByCustomerId(customerId);
     }
+
+    public Table getTableById(int tableId) throws Exception {
+        return tableDao.getById(tableId);
+    }
 }

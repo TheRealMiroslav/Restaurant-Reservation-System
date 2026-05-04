@@ -20,4 +20,8 @@ public class RestaurantService {
     public List<Table> getTables(int restaurantId) throws Exception {
         return restaurantDao.getTablesByRestaurantId(restaurantId);
     }
+
+    public Restaurant getRestaurantByTableId(int tableId) throws Exception {
+        return restaurantDao.getRestaurantByTableId(tableId);
+    }
 }

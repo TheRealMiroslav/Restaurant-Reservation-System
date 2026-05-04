@@ -1,6 +1,7 @@
 package org.mns.dao;
 
 import org.mns.db.DatabaseManager;
+import org.mns.model.Table;
 
 import java.sql.Timestamp;
 
@@ -25,5 +26,20 @@ public class TableDaoImpl implements TableDao {
         }
 
         return false;
+    }
+
+    @Override
+    public Table getById(int id) throws Exception {
+        String sql = "SELECT * FROM restaurant_table WHERE id = ?";
+        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            var rs = stmt.executeQuery();
+            if (rs.next()) {
+                Table table = new Table(rs.getString("table_code"), rs.getInt("capacity"));
+                table.setId(rs.getInt("id"));
+                return table;
+            }
+            return null;
+        }
     }
 }

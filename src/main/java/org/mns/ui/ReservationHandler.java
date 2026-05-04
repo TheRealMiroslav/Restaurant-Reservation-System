@@ -5,9 +5,12 @@ import org.mns.model.Restaurant;
 import org.mns.model.Table;
 import org.mns.service.ReservationService;
 import org.mns.service.RestaurantService;
+import org.mns.facade.ReservationFacade;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,21 +22,25 @@ import static org.mns.ui.CliHelper.subtitle;
  */
 public class ReservationHandler {
 
-    // TODO: možná LocalDateTime + DateTimeFormatter místo Timestamp + SimpleDateFormat
-    private static final SimpleDateFormat FMT = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     private final Scanner sc;
     private final SessionContext session;
     private final ReservationService reservationService;
     private final RestaurantService restaurantService;
+    private final ReservationFacade reservationFacade;
 
-    public ReservationHandler(Scanner sc, SessionContext session, ReservationService reservationService, RestaurantService restaurantService) {
+    public ReservationHandler(Scanner sc, SessionContext session, ReservationService reservationService, RestaurantService restaurantService, ReservationFacade reservationFacade) {
         this.sc = sc;
         this.session = session;
         this.reservationService = reservationService;
         this.restaurantService = restaurantService;
+        this.reservationFacade = reservationFacade;
     }
 
+    /**
+     * Obsluhuje UC-02 Vyhledat restauraci
+     */
     public void searchForRestaurants() {
         title("Vyhledání restaurace");
 
@@ -65,7 +72,9 @@ public class ReservationHandler {
         }
     }
 
-    // TODO: Uprava logiky -> nejdříve čas a počet osob pak stoly
+    /**
+     * Obsluhuje UC-03 Vytvořit rezervaci
+     */
     public void createReservation() {
         title("Vytvoření rezervace");
 
@@ -98,6 +107,36 @@ public class ReservationHandler {
 
             Restaurant selectedRestaurant = restaurant.get(selectedRestaurantIndex - 1);
 
+            // Formulář
+            subtitle("Zadejte údaje rezervace");
+
+            System.out.print("Datum a čas začátku (dd.MM.yyyy HH:mm): ");
+            String fromStr = sc.nextLine().trim();
+
+            System.out.print("Datum a čas konce   (dd.MM.yyyy HH:mm): ");
+            String toStr = sc.nextLine().trim();
+
+            System.out.print("Počet osob: ");
+            int numOfPeople = readNumber(sc);
+
+            System.out.print("Poznámka (Enter pro přeskočení): ");
+            String comment = sc.nextLine().trim();
+
+            Timestamp from;
+            Timestamp to;
+            try {
+                from = Timestamp.valueOf(LocalDateTime.parse(fromStr, FMT));
+                to = Timestamp.valueOf(LocalDateTime.parse(toStr, FMT));
+            } catch (DateTimeParseException e) {
+                error("Neplatný formát data. Použijte: dd.MM.yyyy HH:mm");
+                return;
+            }
+
+            if (numOfPeople < 1) {
+                error("Počet osob musí být alespoň 1.");
+                return;
+            }
+
             info("Načítání stolů...");
 
             // Výběr stolu
@@ -121,36 +160,6 @@ public class ReservationHandler {
             }
 
             Table selectedTable = ListOfTables.get(selectedTableIndex - 1);
-
-            // Formulář
-            subtitle("Zadejte údaje rezervace");
-
-            System.out.print("Datum a čas začátku (dd.MM.yyyy HH:mm): ");
-            String fromStr = sc.nextLine().trim();
-
-            System.out.print("Datum a čas konce  (dd.MM.yyyy HH:mm): ");
-            String toStr = sc.nextLine().trim();
-
-            System.out.print("Počet osob: ");
-            int numOfPeople = readNumber(sc);
-
-            System.out.print("Poznámka (Enter pro přeskočení): ");
-            String comment = sc.nextLine().trim();
-
-            Timestamp from;
-            Timestamp to;
-            try {
-                from = new Timestamp(FMT.parse(fromStr).getTime());
-                to = new Timestamp(FMT.parse(toStr).getTime());
-            } catch (Exception e) {
-                error("Neplatný formát data. Použijte: dd.MM.yyyy HH:mm");
-                return;
-            }
-
-            if (numOfPeople < 1) {
-                error("Počet osob musí být alespoň 1.");
-                return;
-            }
 
             // Krok 4: potvrzení
             subtitle("Shrnutí rezervace");
@@ -181,6 +190,87 @@ public class ReservationHandler {
             error(e.getMessage()); // kapacita překročena, stůl obsazen, rezervace v minulosti
         } catch (Exception e) {
             error("Chyba při vytváření rezervace: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Zjednodušená verze pro UC-03 Vytvořit rezervaci
+     */
+    public void quickReservation() {
+        title("Rychlá rezervace");
+
+        System.out.print("Vyhledat restauraci (název/adresa): ");
+        String searchedText = sc.nextLine().trim();
+
+        info("Vyhledávání restaurací...");
+
+        Restaurant selectedRestaurant;
+        try {
+            List<Restaurant> restaurants = restaurantService.searchRestaurants(searchedText);
+
+            if (restaurants.isEmpty()) {
+                nextLine();
+                info("Žádná restaurace nenalezena.");
+                return;
+            }
+
+            subtitle("Nalezené restaurace (" + restaurants.size() + ")");
+            showRestaurants(restaurants);
+            nextLine();
+
+            System.out.print("Vyberte číslo restaurace: ");
+            int selectedRestaurantIndex = readNumber(sc);
+
+            if (selectedRestaurantIndex < 1 || selectedRestaurantIndex > restaurants.size()) {
+                error("Neplatná volba.");
+                return;
+            }
+
+            selectedRestaurant = restaurants.get(selectedRestaurantIndex - 1);
+        } catch (Exception e) {
+            error("Chyba při vyhledávání restaurace: " + e.getMessage());
+            return;
+        }
+
+        subtitle("Zadejte údaje rezervace pro: " + selectedRestaurant.getName());
+
+        System.out.print("Datum a čas začátku (dd.MM.yyyy HH:mm): ");
+        String fromStr = sc.nextLine().trim();
+
+        System.out.print("Datum a čas konce   (dd.MM.yyyy HH:mm): ");
+        String toStr = sc.nextLine().trim();
+
+        System.out.print("Počet osob: ");
+        int numOfPeople = readNumber(sc);
+
+        System.out.print("Poznámka (Enter pro přeskočení): ");
+        String comment = sc.nextLine().trim();
+
+        Timestamp from;
+        Timestamp to;
+        try {
+            from = Timestamp.valueOf(LocalDateTime.parse(fromStr, FMT));
+            to = Timestamp.valueOf(LocalDateTime.parse(toStr, FMT));
+        } catch (DateTimeParseException e) {
+            error("Neplatný formát data. Použijte: dd.MM.yyyy HH:mm");
+            return;
+        }
+
+        if (numOfPeople < 1) {
+            error("Počet osob musí být alespoň 1.");
+            return;
+        }
+
+        info("Zpracovávání rezervace přes systém (automatické hledání stolu)...");
+        try {
+            boolean success = reservationFacade.bookTable(session.getLoggedInUser(), selectedRestaurant.getName(), numOfPeople, from, to, comment);
+            if (success) {
+                success("Rezervace byla úspěšně vytvořena (stůl byl automaticky přiřazen)!");
+            }
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            error(e.getMessage());
+        } catch (Exception e) {
+            error("Chyba při rychlé rezervaci: " + e.getMessage());
         }
     }
 
@@ -252,6 +342,9 @@ public class ReservationHandler {
         }
     }
 
+    /**
+     * Obsluhuje UC-04 Zrušit rezervaci
+     */
     private void cancelReservation(List<Reservation> reservation) {
         System.out.print("Zadejte číslo rezervace ke zrušení: ");
         int selection = readNumber(sc);
@@ -304,7 +397,13 @@ public class ReservationHandler {
     private void showReservations(List<Reservation> reservationList) {
         for (int i = 0; i < reservationList.size(); i++) {
             Reservation r = reservationList.get(i);
-            System.out.printf("  %d) Stůl ID: %-4d  %s → %s  [%s]%n", i + 1, r.getTableId(), FMT.format(r.getStartTime()), FMT.format(r.getEndTime()), r.getStatus().getName());
+
+            String restaurantName = r.getRestaurantName() != null ? r.getRestaurantName() : "Neznámá restaurace";
+            String tableCode = r.getTableCode() != null ? r.getTableCode() : String.valueOf(r.getTableId());
+            int tableCapacity = r.getTableCapacity();
+
+            System.out.printf("  %d) %s (Stůl %s, %d míst)%n", i + 1, restaurantName, tableCode, tableCapacity);
+            System.out.printf("     %s → %s  [%s]%n", r.getStartTime().toLocalDateTime().format(FMT), r.getEndTime().toLocalDateTime().format(FMT), r.getStatus().getName());
             if (r.getComment() != null && !r.getComment().isBlank())
                 System.out.printf("          Poznámka: %s%n", r.getComment());
         }

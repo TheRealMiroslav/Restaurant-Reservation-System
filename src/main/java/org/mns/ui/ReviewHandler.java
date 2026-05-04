@@ -24,6 +24,9 @@ public class ReviewHandler {
         this.restaurantService = restaurantService;
     }
 
+    /**
+     * Obsluhuje UC-05 Napsat recenzi
+     */
     public void handleCreateReview() {
         title("Napsat recenzi");
 
