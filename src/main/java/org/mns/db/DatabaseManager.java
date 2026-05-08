@@ -1,15 +1,19 @@
 package org.mns.db;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.stream.Collectors;
 
 public class DatabaseManager {
     private static final String URL = "jdbc:h2:./h2database;AUTO_SERVER=TRUE";
     private static final String USER = "sa";
     private static final String PASSWORD = "";
 
-    public static void initialize() {
+    public static void initializeOld() {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD); Statement stmt = conn.createStatement()) {
             stmt.execute("CREATE TABLE IF NOT EXISTS customer (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "first_name VARCHAR(100), " + "last_name VARCHAR(100), " + "email VARCHAR(100) UNIQUE, " + "phone_number VARCHAR(20), " + "password VARCHAR(255))");
 
@@ -25,6 +29,21 @@ public class DatabaseManager {
 
         } catch (Exception e) {
             throw new RuntimeException("Nepodařilo se inicializovat databázi: " + e.getMessage(), e);
+        }
+    }
+
+    public static void initialize() {
+        try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
+            InputStream is = DatabaseManager.class.getClassLoader().getResourceAsStream("schema.sql");
+            if (is == null) throw new RuntimeException("Soubor schema.sql nebyl nalezen!");
+
+            String sql = new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
+
+            stmt.execute(sql);
+            System.out.println("Databázové schéma bylo úspěšně inicializováno.");
+
+        } catch (Exception e) {
+            throw new RuntimeException("Chyba při inicializaci DB: " + e.getMessage(), e);
         }
     }
 
