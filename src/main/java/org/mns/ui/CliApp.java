@@ -1,12 +1,10 @@
 package org.mns.ui;
 
 import org.mns.dao.*;
+import org.mns.facade.ReservationFacadeImpl;
 import org.mns.observer.RestaurantRatingUpdater;
 import org.mns.observer.ReviewObserver;
-import org.mns.service.CustomerService;
-import org.mns.service.ReservationService;
-import org.mns.service.RestaurantService;
-import org.mns.service.ReviewService;
+import org.mns.service.*;
 import org.mns.ui.command.Command;
 import org.mns.facade.ReservationFacade;
 
@@ -38,11 +36,11 @@ public class CliApp {
         ReviewDao reviewDao = new ReviewDaoImpl();
         RestaurantDao restaurantDao = new RestaurantDaoImpl();
 
-        CustomerService customerService = new CustomerService(customerDao);
-        ReservationService reservationService = new ReservationService(reservationDao, tableDao);
-        RestaurantService restaurantService = new RestaurantService(restaurantDao);
-        ReviewService reviewService = new ReviewService(reviewDao, reservationDao);
-        ReservationFacade reservationFacade = new ReservationFacade(restaurantService, reservationService);
+        CustomerService customerService = new CustomerServiceImpl(customerDao);
+        ReservationService reservationService = new ReservationServiceImpl(reservationDao, tableDao);
+        RestaurantService restaurantService = new RestaurantServiceImpl(restaurantDao);
+        ReviewService reviewService = new ReviewServiceImpl(reviewDao, reservationDao);
+        ReservationFacade reservationFacade = new ReservationFacadeImpl(restaurantService, reservationService);
 
         ReviewObserver ratingUpdater = new RestaurantRatingUpdater(restaurantDao);
         reviewService.addObserver(ratingUpdater);

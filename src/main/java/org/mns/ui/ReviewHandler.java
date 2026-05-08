@@ -1,6 +1,5 @@
 package org.mns.ui;
 
-import org.mns.model.Reservation;
 import org.mns.model.Restaurant;
 import org.mns.model.Review;
 import org.mns.service.RestaurantService;
