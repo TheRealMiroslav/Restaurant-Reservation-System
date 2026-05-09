@@ -9,6 +9,9 @@ import java.util.Scanner;
 
 import static org.mns.ui.CliHelper.*;
 
+/**
+ * Třída pro obsluhu autentizačních operací (přihlášení a registrace) v rámci CLI.
+ */
 public class AuthHandler {
     private final Scanner sc;
     private final SessionContext session;
@@ -33,10 +36,10 @@ public class AuthHandler {
         String password = sc.nextLine().trim();
 
         info("Zpracovávání přihlášení...");
-        nextLine();
 
         try {
             Optional<Customer> customer = customerService.login(new LoginCredentials(email, password));
+            nextLine();
 
             if (customer.isEmpty()) {
                 error("Nesprávný e-mail nebo heslo.");
@@ -47,10 +50,14 @@ public class AuthHandler {
             success("Přihlášení úspěšné. Vítej, " + customer.get().getFirstName() + "!");
 
         } catch (Exception e) {
+            nextLine();
             error("Chyba při přihlášení: " + e.getMessage());
         }
     }
 
+    /**
+     * Zobrazí formulář pro registraci a provede registraci nového uživatele.
+     */
     public void handleRegistration() {
         title("Registrace nového účtu");
 

@@ -8,8 +8,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Optional;
 
+/**
+ * JDBC implementace rozhraní {@link CustomerDao}.
+ */
 public class CustomerDaoImpl implements CustomerDao {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Customer> getByEmail(String email) throws Exception {
         String sql = "SELECT * FROM customer WHERE email = ?";
@@ -25,6 +31,9 @@ public class CustomerDaoImpl implements CustomerDao {
         return Optional.empty();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Customer> getById(int id) throws Exception {
         String sql = "SELECT * FROM customer WHERE id = ?";
@@ -40,6 +49,13 @@ public class CustomerDaoImpl implements CustomerDao {
         return Optional.empty();
     }
 
+    /**
+     * Pomocná metoda pro mapování ResultSetu na objekt Customer.
+     *
+     * @param stmt Připravený příkaz s výsledkem.
+     * @return Optional se zákazníkem.
+     * @throws SQLException Při chybě mapování polí.
+     */
     private Optional<Customer> getCustomer(PreparedStatement stmt) throws SQLException {
         var rs = stmt.executeQuery();
 
@@ -58,6 +74,9 @@ public class CustomerDaoImpl implements CustomerDao {
         return Optional.empty();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void create(String firstName, String lastName, String email, String phoneNumber, String password) throws Exception {
         String sql = "INSERT INTO customer (first_name, last_name, email, phone_number, password) VALUES (?, ?, ?, ?, ?)";

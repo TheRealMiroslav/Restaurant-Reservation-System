@@ -1,5 +1,8 @@
 package org.mns.model;
 
+/**
+ * Entita reprezentující stůl v restauraci.
+ */
 public class Table {
     protected int id;
     protected String code;

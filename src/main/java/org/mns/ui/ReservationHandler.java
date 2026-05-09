@@ -1,11 +1,11 @@
 package org.mns.ui;
 
+import org.mns.facade.ReservationFacade;
 import org.mns.model.Reservation;
 import org.mns.model.Restaurant;
 import org.mns.model.Table;
 import org.mns.service.ReservationService;
 import org.mns.service.RestaurantService;
-import org.mns.facade.ReservationFacade;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Scanner;
 
 import static org.mns.ui.CliHelper.*;
-import static org.mns.ui.CliHelper.subtitle;
 
 /**
- * Obsluhuje UC-02 Vyhledat restauraci, UC-03 Vytvořit rezervaci, UC-04 Zrušit rezervaci.
+ * Třída pro obsluhu uživatelského rozhraní týkajícího se rezervací.
+ * Zajišťuje interakci s uživatelem pro vyhledávání, vytváření a správu rezervací.
  */
 public class ReservationHandler {
 
@@ -40,6 +40,8 @@ public class ReservationHandler {
 
     /**
      * Obsluhuje UC-02 Vyhledat restauraci
+     * Umožňuje uživateli zadat hledaný text (název nebo adresa)
+     * a zobrazuje seznam odpovídajících restaurací s jejich průměrným hodnocením.
      */
     public void searchForRestaurants() {
         title("Vyhledání restaurace");
@@ -74,6 +76,11 @@ public class ReservationHandler {
 
     /**
      * Obsluhuje UC-03 Vytvořit rezervaci
+     * Umožňuje uživateli vytvořit novou rezervaci v několika krocích:
+     * 1) Vyhledat a vybrat restauraci
+     * 2) Zadat datum, čas, počet osob a poznámku
+     * 3) Vybrat konkrétní stůl z dostupných
+     * 4) Potvrdit rezervaci a zpracovat ji přes službu
      */
     public void createReservation() {
         title("Vytvoření rezervace");
@@ -140,26 +147,32 @@ public class ReservationHandler {
             info("Načítání stolů...");
 
             // Výběr stolu
-            List<Table> ListOfTables = restaurantService.getTables(selectedRestaurant.getId());
+            List<Table> allTables = restaurantService.getTables(selectedRestaurant.getId());
+            List<Table> availableTables = new java.util.ArrayList<>();
+            for (Table t : allTables) {
+                if (reservationService.isTableAvailable(t.getId(), from, to)) {
+                    availableTables.add(t);
+                }
+            }
 
             subtitle("Dostupné stoly — " + selectedRestaurant.getName());
 
-            if (ListOfTables.isEmpty()) {
-                info("Tato restaurace nemá evidované žádné stoly.");
+            if (availableTables.isEmpty()) {
+                info("V této době nejsou k dispozici žádné volné stoly.");
                 return;
             }
 
-            showTables(ListOfTables);
+            showTables(availableTables);
 
             System.out.print("Vyberte číslo stolu: ");
             int selectedTableIndex = readNumber(sc);
 
-            if (selectedTableIndex < 1 || selectedTableIndex > ListOfTables.size()) {
+            if (selectedTableIndex < 1 || selectedTableIndex > availableTables.size()) {
                 error("Neplatná volba.");
                 return;
             }
 
-            Table selectedTable = ListOfTables.get(selectedTableIndex - 1);
+            Table selectedTable = availableTables.get(selectedTableIndex - 1);
 
             // Krok 4: potvrzení
             subtitle("Shrnutí rezervace");
@@ -180,9 +193,9 @@ public class ReservationHandler {
             }
 
             info("Zpracovávání rezervace...");
-            nextLine();
 
             reservationService.createReservation(session.getLoggedInUser(), selectedTable, from, to, comment, numOfPeople);
+            nextLine();
 
             success("Rezervace byla úspěšně vytvořena!");
 
@@ -194,7 +207,9 @@ public class ReservationHandler {
     }
 
     /**
-     * Zjednodušená verze pro UC-03 Vytvořit rezervaci
+     * Obsluhuje UC-03 Rychlá rezervace
+     * Zjednodušená verze pro UC-03 Vytvořit rezervaci, kde uživatel nemusí vybírat konkrétní stůl,
+     * ale systém mu automaticky přiřadí vhodný stůl na základě zadaných parametrů.
      */
     public void quickReservation() {
         title("Rychlá rezervace");
@@ -262,18 +277,27 @@ public class ReservationHandler {
         }
 
         info("Zpracovávání rezervace přes systém (automatické hledání stolu)...");
+
         try {
             boolean success = reservationFacade.bookTable(session.getLoggedInUser(), selectedRestaurant.getName(), numOfPeople, from, to, comment);
+            nextLine();
+
             if (success) {
                 success("Rezervace byla úspěšně vytvořena (stůl byl automaticky přiřazen)!");
             }
         } catch (IllegalArgumentException | IllegalStateException e) {
+            nextLine();
             error(e.getMessage());
         } catch (Exception e) {
+            nextLine();
             error("Chyba při rychlé rezervaci: " + e.getMessage());
         }
     }
 
+    /**
+     * Zobrazí seznam všech rezervací přihlášeného uživatele a umožní jejich správu.
+     * Obsluhuje UC-04 Zobrazit moje rezervace
+     */
     public void showMyReservations() {
         info("Hledání rezervací...");
 
@@ -309,16 +333,21 @@ public class ReservationHandler {
         }
     }
 
-    private void confirmReservation(List<Reservation> reservation) {
+    /**
+     * Provede interaktivní potvrzení vybrané rezervace.
+     *
+     * @param reservationList Seznam rezervací, ze kterého uživatel vybírá.
+     */
+    private void confirmReservation(List<Reservation> reservationList) {
         System.out.print("Zadejte číslo rezervace k potvrzení: ");
         int selection = readNumber(sc);
 
-        if (selection < 1 || selection > reservation.size()) {
+        if (selection < 1 || selection > reservationList.size()) {
             error("Neplatná volba.");
             return;
         }
 
-        Reservation selected = reservation.get(selection - 1);
+        Reservation selected = reservationList.get(selection - 1);
 
         System.out.print("Opravdu chcete potvrdit tuto rezervaci? (a/n): ");
         String confirmation = sc.nextLine().trim().toLowerCase();
@@ -328,33 +357,37 @@ public class ReservationHandler {
             return;
         }
 
-        info("Zpracovávání potvrzení rezervace");;
-        nextLine();
+        info("Zpracovávání potvrzení rezervace");
 
         try {
             reservationService.confirmReservation(selected);
+            nextLine();
 
             success("Rezervace byla úspěšně potvrzena.");
         } catch (IllegalStateException e) {
+            nextLine();
             error(e.getMessage()); // State pattern vyhodí výjimku pro nepovolenou akci
         } catch (Exception e) {
+            nextLine();
             error("Chyba při potvrzování rezervace: " + e.getMessage());
         }
     }
 
     /**
      * Obsluhuje UC-04 Zrušit rezervaci
+     *
+     * @param reservationList Seznam rezervací, ze kterého uživatel vybírá.
      */
-    private void cancelReservation(List<Reservation> reservation) {
+    private void cancelReservation(List<Reservation> reservationList) {
         System.out.print("Zadejte číslo rezervace ke zrušení: ");
         int selection = readNumber(sc);
 
-        if (selection < 1 || selection > reservation.size()) {
+        if (selection < 1 || selection > reservationList.size()) {
             error("Neplatná volba.");
             return;
         }
 
-        Reservation selected = reservation.get(selection - 1);
+        Reservation selected = reservationList.get(selection - 1);
 
         System.out.print("Opravdu chcete zrušit tuto rezervaci? (a/n): ");
         String confirmation = sc.nextLine().trim().toLowerCase();
@@ -378,6 +411,11 @@ public class ReservationHandler {
         }
     }
 
+    /**
+     * Vypíše seznam restaurací ve formátované podobě.
+     *
+     * @param restaurantList Seznam restaurací k zobrazení.
+     */
     private void showRestaurants(List<Restaurant> restaurantList) {
         for (int i = 0; i < restaurantList.size(); i++) {
             Restaurant r = restaurantList.get(i);
@@ -386,6 +424,11 @@ public class ReservationHandler {
         }
     }
 
+    /**
+     * Vypíše seznam stolů pro vybranou restauraci.
+     *
+     * @param tableList Seznam stolů k zobrazení.
+     */
     private void showTables(List<Table> tableList) {
         for (int i = 0; i < tableList.size(); i++) {
             Table s = tableList.get(i);
@@ -394,6 +437,11 @@ public class ReservationHandler {
         nextLine();
     }
 
+    /**
+     * Vypíše seznam rezervací uživatele včetně jejich detailů a aktuálního stavu.
+     *
+     * @param reservationList Seznam rezervací k zobrazení.
+     */
     private void showReservations(List<Reservation> reservationList) {
         for (int i = 0; i < reservationList.size(); i++) {
             Reservation r = reservationList.get(i);

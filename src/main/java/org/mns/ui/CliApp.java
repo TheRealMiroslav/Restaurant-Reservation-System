@@ -1,12 +1,12 @@
 package org.mns.ui;
 
 import org.mns.dao.*;
+import org.mns.facade.ReservationFacade;
 import org.mns.facade.ReservationFacadeImpl;
 import org.mns.observer.RestaurantRatingUpdater;
 import org.mns.observer.ReviewObserver;
 import org.mns.service.*;
 import org.mns.ui.command.Command;
-import org.mns.facade.ReservationFacade;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +29,9 @@ public class CliApp {
     private final Map<Integer, Command> mainMenuCommands = new HashMap<>();
     private final Map<Integer, Command> customerMenuCommands = new HashMap<>();
 
+    /**
+     * Inicializuje komponenty aplikace a registruje příkazy pro Command menu.
+     */
     public CliApp() {
         CustomerDao customerDao = new CustomerDaoImpl();
         TableDao tableDao = new TableDaoImpl();
@@ -68,6 +71,9 @@ public class CliApp {
         customerMenuCommands.put(0, this::end);
     }
 
+    /**
+     * Spustí hlavní smyčku aplikace.
+     */
     public void start() {
         System.out.println();
         System.out.println(BOLD + "╔════════════════════════════════════════╗" + RESET);
@@ -128,12 +134,18 @@ public class CliApp {
         }
     }
 
+    /**
+     * Odhlásí aktuálně přihlášeného uživatele.
+     */
     private void logout() {
         String name = session.getLoggedInUser().getFirstName();
         session.logOut();
         success("Uživatel " + name + " byl odhlášen.");
     }
 
+    /**
+     * Ukončí aplikaci.
+     */
     private void end() {
         info("Ukončení aplikace. Na shledanou!");
         System.exit(0);
