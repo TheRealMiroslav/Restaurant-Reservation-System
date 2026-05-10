@@ -1,20 +1,21 @@
 package org.mns.service;
 
 import org.mns.dao.ReservationDao;
-import org.mns.dao.RestaurantDao;
 import org.mns.dao.ReviewDao;
 import org.mns.model.Review;
+import org.mns.observer.ReviewObserver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReviewService {
     private final ReviewDao reviewDao;
-    private final RestaurantDao restaurantDao;
     private final ReservationDao reservationDao;
 
-    public ReviewService(ReviewDao reviewDao, RestaurantDao restaurantDao, ReservationDao reservationDao) {
+    private final List<ReviewObserver> observers = new ArrayList<>();
+
+    public ReviewService(ReviewDao reviewDao, ReservationDao reservationDao) {
         this.reviewDao = reviewDao;
-        this.restaurantDao = restaurantDao;
         this.reservationDao = reservationDao;
     }
 
@@ -26,10 +27,19 @@ public class ReviewService {
         }
 
         Review review = new Review(customerId, restaurantId, rating, comment);
-
         reviewDao.createReview(review);
 
-        restaurantDao.updateRestaurantRating(restaurantId);
+        notifyObservers(review);
+    }
+
+    private void notifyObservers(Review review) {
+        for (ReviewObserver observer : observers) {
+            observer.onReviewCreated(review);
+        }
+    }
+
+    public void addObserver(ReviewObserver observer) {
+        this.observers.add(observer);
     }
 
     public List<Review> getCustomerReviews(int customerId) throws Exception {
