@@ -9,23 +9,22 @@ public class DatabaseManager {
     private static final String USER = "sa";
     private static final String PASSWORD = "";
 
-    public static void inicializujDatabazi() {
+    public static void initialize() {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD); Statement stmt = conn.createStatement()) {
+            stmt.execute("CREATE TABLE IF NOT EXISTS customer (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "first_name VARCHAR(100), " + "last_name VARCHAR(100), " + "email VARCHAR(100) UNIQUE, " + "phone_number VARCHAR(20), " + "password VARCHAR(255))");
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS Zakaznik (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "jmeno VARCHAR(100), " + "prijmeni VARCHAR(100), " + "email VARCHAR(100) UNIQUE, " + "telefonniCislo VARCHAR(20), " + "heslo VARCHAR(255))");
+            stmt.execute("CREATE TABLE IF NOT EXISTS restaurant (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "name VARCHAR(100), " + "address VARCHAR(255), " + "phone_number VARCHAR(20), " + "email VARCHAR(100), " + "average_rating DOUBLE DEFAULT 0.0)");
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS Restaurace (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "nazev VARCHAR(100), " + "adresa VARCHAR(255), " + "telefonniCislo VARCHAR(20), " + "email VARCHAR(100), " + "prumerneHodnoceni DOUBLE DEFAULT 0.0)");
+            stmt.execute("CREATE TABLE IF NOT EXISTS restaurant_table (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "restaurant_id INT, " + "table_code VARCHAR(20), " + "capacity INT, " + "FOREIGN KEY (restaurant_id) REFERENCES restaurant(id))");
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS Stul (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "restauraceId INT, " + "kodStolu VARCHAR(20), " + "kapacita INT, " + "FOREIGN KEY (restauraceId) REFERENCES Restaurace(id))");
+            stmt.execute("CREATE TABLE IF NOT EXISTS reservation (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "customer_id INT, " + "table_id INT, " + "start_time TIMESTAMP, " + "end_time TIMESTAMP, " + "notes VARCHAR(255), " + "person_count int, " + "status VARCHAR(20) DEFAULT 'NEPOTVRZENA', " + "FOREIGN KEY (customer_id) REFERENCES customer(id), " + "FOREIGN KEY (table_id) REFERENCES restaurant_table(id))");
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS Rezervace (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "zakaznikId INT, " + "stulId INT, " + "casZacatek TIMESTAMP, " + "casKonec TIMESTAMP, " + "poznamky VARCHAR(255), " + "pocetOsob int, " + "stav VARCHAR(20) DEFAULT 'NEPOTVRZENA', " + "FOREIGN KEY (zakaznikId) REFERENCES Zakaznik(id), " + "FOREIGN KEY (stulId) REFERENCES Stul(id))");
+            stmt.execute("CREATE TABLE IF NOT EXISTS review (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "customer_id INT, " + "restaurant_id INT, " + "comment VARCHAR(255), " + "rating DOUBLE, " + "FOREIGN KEY (customer_id) REFERENCES customer(id), " + "FOREIGN KEY (restaurant_id) REFERENCES restaurant(id))");
 
-            stmt.execute("CREATE TABLE IF NOT EXISTS Recenze (" + "id INT PRIMARY KEY AUTO_INCREMENT, " + "zakaznikId INT, " + "restauraceId INT, " + "komentar VARCHAR(255), " + "hodnoceni DOUBLE, " + "FOREIGN KEY (zakaznikId) REFERENCES Zakaznik(id), " + "FOREIGN KEY (restauraceId) REFERENCES Restaurace(id))");
-
-            System.out.println("Databáze je připravena!");
+            System.out.println("Databáze je připravena!\n");
 
         } catch (Exception e) {
-            System.err.println("Chyba při inicializaci DB: " + e.getMessage());
+            throw new RuntimeException("Nepodařilo se inicializovat databázi: " + e.getMessage(), e);
         }
     }
 

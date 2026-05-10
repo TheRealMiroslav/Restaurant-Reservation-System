@@ -56,7 +56,7 @@ Otevři issue a uveď:
 4. Commituj výstižně:
    ```
    feat: přidána správa recenzí restaurací
-   fix: opraveno vyhledávání restaurace (překlep v SQL)
+   fix: opraveno vyhledávání restaurant (překlep v SQL)
    ```
 5. Otevři Pull Request na větev `main`
 
