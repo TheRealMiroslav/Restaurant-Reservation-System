@@ -1,21 +1,33 @@
 package org.mns.dao;
 
 import org.mns.model.Restaurant;
-import org.mns.model.Table;
 
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * Rozhraní pro přístup k informacím o restauracích a jejich stolech.
+ */
 public interface RestaurantDao {
-    Optional<Restaurant> getById(int id) throws Exception;
+    /**
+     * Vyhledá restaurace podle textového řetězce (hledá v názvu nebo adrese).
+     *
+     * @param text Hledaný výraz.
+     * @return Seznam odpovídajících restaurací.
+     */
+    List<Restaurant> findByText(String text) throws Exception;
 
-    List<Restaurant> getAll() throws Exception;
-
-    List<Restaurant> findByText(String Text) throws Exception;
-
-    List<Table> getTablesByRestaurantId(int restaurantId) throws Exception;
-
+    /**
+     * Získá restauraci, ke které patří konkrétní stůl.
+     *
+     * @param tableId ID stolu.
+     * @return Objekt Restaurant nebo null, pokud nebyl nalezen.
+     */
     Restaurant getRestaurantByTableId(int tableId) throws Exception;
 
+    /**
+     * Přepočítá průměrné hodnocení restaurace na základě všech uložených recenzí.
+     *
+     * @param restaurantId ID restaurace k aktualizaci.
+     */
     void updateRestaurantRating(int restaurantId) throws Exception;
 }

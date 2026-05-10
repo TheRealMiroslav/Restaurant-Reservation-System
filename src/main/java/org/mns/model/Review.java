@@ -1,5 +1,8 @@
 package org.mns.model;
 
+/**
+ * Entita reprezentující recenzi restaurace od zákazníka.
+ */
 public class Review {
     protected int id;
     protected int customerId;

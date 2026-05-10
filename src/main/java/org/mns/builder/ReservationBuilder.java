@@ -1,8 +1,13 @@
 package org.mns.builder;
 
 import org.mns.model.Reservation;
+
 import java.sql.Timestamp;
 
+/**
+ * Builder pro plynulé (fluent) vytváření instancí {@link Reservation}.
+ * Obsahuje základní validace časových údajů před vytvořením objektu.
+ */
 public class ReservationBuilder {
     private int customerId;
     private int tableId;
@@ -41,6 +46,13 @@ public class ReservationBuilder {
         return this;
     }
 
+    /**
+     * Vytvoří instanci rezervace.
+     * Provádí validaci, zda konec není před začátkem a zda se nerezervuje v minulosti.
+     *
+     * @return Nově vytvořený objekt Reservation.
+     * @throws IllegalArgumentException Pokud validace časů selže.
+     */
     public Reservation build() {
         // Časová validace
         if (startTime != null && endTime != null && startTime.after(endTime)) {

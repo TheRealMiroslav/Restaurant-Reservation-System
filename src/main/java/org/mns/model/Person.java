@@ -1,5 +1,8 @@
 package org.mns.model;
 
+/**
+ * Abstraktní třída reprezentující osobu v systému (zákazník, zaměstnanec apod.).
+ */
 public abstract class Person {
     protected int id;
     protected String firstName;

@@ -6,6 +6,9 @@ import org.mns.model.Customer;
 
 import java.util.Optional;
 
+/**
+ * Implementace služby pro správu zákazníků.
+ */
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerDao customerDao;
@@ -14,6 +17,9 @@ public class CustomerServiceImpl implements CustomerService {
         this.customerDao = customerDao;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public Optional<Customer> login(LoginCredentials credentials) throws Exception {
         Optional<Customer> customer = customerDao.getByEmail(credentials.email());
 
@@ -28,6 +34,9 @@ public class CustomerServiceImpl implements CustomerService {
         return customer;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void register(String firstName, String lastName, String email, String phoneNumber, String password) throws Exception {
         Optional<Customer> existing = customerDao.getByEmail(email);
 

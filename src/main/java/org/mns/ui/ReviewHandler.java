@@ -10,6 +10,9 @@ import java.util.Scanner;
 
 import static org.mns.ui.CliHelper.*;
 
+/**
+ * Třída pro obsluhu uživatelského rozhraní při vytváření a správě recenzí.
+ */
 public class ReviewHandler {
     private final Scanner sc;
     private final SessionContext session;
@@ -108,6 +111,9 @@ public class ReviewHandler {
         }
     }
 
+    /**
+     * Zobrazí seznam recenzí aktuálně přihlášeného uživatele.
+     */
     public void showMyReviews() {
         info("Hledání recenzí...");
 
@@ -138,6 +144,11 @@ public class ReviewHandler {
         }
     }
 
+    /**
+     * Pomocná metoda pro výpis seznamu recenzí do konzole.
+     *
+     * @param reviewList Seznam recenzí k výpisu.
+     */
     private void showReviews(List<org.mns.model.Review> reviewList) {
         for (int i = 0; i < reviewList.size(); i++) {
             org.mns.model.Review r = reviewList.get(i);

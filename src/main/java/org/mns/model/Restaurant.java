@@ -2,6 +2,10 @@ package org.mns.model;
 
 import java.util.List;
 
+/**
+ * Entita reprezentující restauraci v systému.
+ * Obsahuje základní údaje, průměrné hodnocení a seznamy stolů a recenzí.
+ */
 public class Restaurant {
     protected int id;
     protected String name;

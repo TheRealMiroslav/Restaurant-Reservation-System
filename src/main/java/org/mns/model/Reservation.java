@@ -5,6 +5,11 @@ import org.mns.model.state.UnconfirmedReservationState;
 
 import java.sql.Timestamp;
 
+/**
+ * Třída reprezentující rezervaci v systému.
+ * Obsahuje informace o zákazníkovi, stolu, času a stavu rezervace.
+ * Využívá návrhový vzor State pro správu životního cyklu rezervace.
+ */
 public class Reservation {
     protected int id;
     protected int customerId;
@@ -47,14 +52,23 @@ public class Reservation {
 
     }
 
+    /**
+     * Potvrdí rezervaci. Přechází do stavu potvrzeno.
+     */
     public void confirm() {
         status.confirm(this);
     }
 
+    /**
+     * Zruší rezervaci. Přechází do stavu zrušeno.
+     */
     public void cancel() {
         status.cancel(this);
     }
 
+    /**
+     * Označí rezervaci za dokončenou (proběhlou).
+     */
     public void complete() {
         status.complete(this);
     }

@@ -2,7 +2,6 @@ package org.mns.dao;
 
 import org.mns.db.DatabaseManager;
 import org.mns.model.Restaurant;
-import org.mns.model.Table;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,45 +9,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * JDBC implementace rozhraní {@link RestaurantDao}.
+ */
 public class RestaurantDaoImpl implements RestaurantDao {
-
-    @Override
-    public Optional<Restaurant> getById(int id) throws Exception {
-        String sql = "SELECT * FROM restaurant WHERE id LIKE ?";
-
-        try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-
-            var rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                Restaurant restaurant = getRestaurants(rs);
-                return Optional.of(restaurant);
-            }
-
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    public List<Restaurant> getAll() throws Exception {
-        List<Restaurant> restaurantList = new ArrayList<>();
-
-        String sql = "SELECT * FROM restaurant";
-
-        try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            var rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                restaurantList.add(getRestaurants(rs));
-            }
-
-            return restaurantList;
-        }
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<Restaurant> findByText(String text) throws Exception {
         List<Restaurant> restaurantList = new ArrayList<>();
@@ -69,6 +37,13 @@ public class RestaurantDaoImpl implements RestaurantDao {
         }
     }
 
+    /**
+     * Pomocná metoda pro mapování ResultSetu na objekt Restaurant.
+     *
+     * @param rs ResultSet s daty restaurace.
+     * @return Objekt Restaurant s naplněnými daty.
+     * @throws SQLException Při chybě čtení z ResultSetu.
+     */
     private Restaurant getRestaurants(ResultSet rs) throws SQLException {
         Restaurant restaurant = new Restaurant();
 
@@ -82,25 +57,9 @@ public class RestaurantDaoImpl implements RestaurantDao {
         return restaurant;
     }
 
-    @Override
-    public List<Table> getTablesByRestaurantId(int restaurantId) throws Exception {
-        List<Table> tableList = new ArrayList<>();
-        String sql = "SELECT * FROM restaurant_table WHERE restaurant_id = ?";
-
-        try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, restaurantId);
-            var rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Table s = new Table(rs.getString("table_code"), rs.getInt("capacity"));
-                s.setId(rs.getInt("id"));
-                tableList.add(s);
-            }
-        }
-
-        return tableList;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Restaurant getRestaurantByTableId(int tableId) throws Exception {
         String sql = "SELECT r.* FROM restaurant r JOIN restaurant_table t ON r.id = t.restaurant_id WHERE t.id = ?";
@@ -114,6 +73,9 @@ public class RestaurantDaoImpl implements RestaurantDao {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateRestaurantRating(int restaurantId) throws Exception {
         String sql = "UPDATE restaurant SET average_rating = " + "(SELECT AVG(rating) FROM review WHERE restaurant_id = ?) " + "WHERE id = ?";

@@ -9,6 +9,12 @@ import org.mns.service.RestaurantService;
 import java.sql.Timestamp;
 import java.util.List;
 
+import static org.mns.ui.CliHelper.nextLine;
+
+/**
+ * Implementace fasády pro rezervace.
+ * Koordinuje {@link RestaurantService} a {@link ReservationService}.
+ */
 public class ReservationFacadeImpl implements ReservationFacade {
     private final RestaurantService restaurantService;
     private final ReservationService reservationService;
@@ -23,9 +29,11 @@ public class ReservationFacadeImpl implements ReservationFacade {
      */
     public boolean bookTable(Customer customer, String restaurantName, int capacity, Timestamp from, Timestamp to, String comment) throws Exception {
         List<Restaurant> restaurants = restaurantService.searchRestaurants(restaurantName);
+
         if (restaurants.isEmpty()) {
             throw new IllegalArgumentException("Restaurace s názvem/adresou '" + restaurantName + "' nebyla nalezena.");
         }
+
         Restaurant selectedRestaurant = restaurants.getFirst();
 
         List<Table> tables = restaurantService.getTables(selectedRestaurant.getId());

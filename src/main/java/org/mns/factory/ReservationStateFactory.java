@@ -5,6 +5,10 @@ import org.mns.model.state.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Továrna pro správu a získávání instancí stavů rezervace.
+ * Využívá Flyweight pattern pro sdílení instancí bezstavových objektů {@link ReservationState}.
+ */
 public class ReservationStateFactory {
     private static final Map<String, ReservationState> states = new HashMap<>();
 
