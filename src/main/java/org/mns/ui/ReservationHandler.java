@@ -155,7 +155,7 @@ public class ReservationHandler {
                 }
             }
 
-            subtitle("Dostupné stoly — " + selectedRestaurant.getName());
+            subtitle("Dostupné stoly - " + selectedRestaurant.getName());
 
             if (availableTables.isEmpty()) {
                 info("V této době nejsou k dispozici žádné volné stoly.");
@@ -432,7 +432,7 @@ public class ReservationHandler {
     private void showTables(List<Table> tableList) {
         for (int i = 0; i < tableList.size(); i++) {
             Table s = tableList.get(i);
-            System.out.printf("  %d) Stůl %-8s — kapacita %d osob%n", i + 1, s.getCode(), s.getCapacity());
+            System.out.printf("  %d) Stůl %-8s - kapacita %d osob%n", i + 1, s.getCode(), s.getCapacity());
         }
         nextLine();
     }

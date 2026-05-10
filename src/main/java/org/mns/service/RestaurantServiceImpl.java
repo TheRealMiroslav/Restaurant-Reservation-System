@@ -1,6 +1,7 @@
 package org.mns.service;
 
 import org.mns.dao.RestaurantDao;
+import org.mns.dao.TableDao;
 import org.mns.model.Restaurant;
 import org.mns.model.Table;
 
@@ -11,9 +12,11 @@ import java.util.List;
  */
 public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantDao restaurantDao;
+    private final TableDao tableDao;
 
-    public RestaurantServiceImpl(RestaurantDao restaurantDao) {
+    public RestaurantServiceImpl(RestaurantDao restaurantDao, TableDao tableDao) {
         this.restaurantDao = restaurantDao;
+        this.tableDao = tableDao;
     }
 
     /**
@@ -27,7 +30,7 @@ public class RestaurantServiceImpl implements RestaurantService {
      * {@inheritDoc}
      */
     public List<Table> getTables(int restaurantId) throws Exception {
-        return restaurantDao.getTablesByRestaurantId(restaurantId);
+        return tableDao.getTablesByRestaurantId(restaurantId);
     }
 
     /**

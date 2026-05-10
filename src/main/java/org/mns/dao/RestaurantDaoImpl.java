@@ -2,7 +2,6 @@ package org.mns.dao;
 
 import org.mns.db.DatabaseManager;
 import org.mns.model.Restaurant;
-import org.mns.model.Table;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,54 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * JDBC implementace rozhraní {@link RestaurantDao}.
  */
 public class RestaurantDaoImpl implements RestaurantDao {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Optional<Restaurant> getById(int id) throws Exception {
-        String sql = "SELECT * FROM restaurant WHERE id LIKE ?";
-
-        try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-
-            var rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                Restaurant restaurant = getRestaurants(rs);
-                return Optional.of(restaurant);
-            }
-
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Restaurant> getAll() throws Exception {
-        List<Restaurant> restaurantList = new ArrayList<>();
-
-        String sql = "SELECT * FROM restaurant";
-
-        try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            var rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                restaurantList.add(getRestaurants(rs));
-            }
-
-            return restaurantList;
-        }
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -99,28 +55,6 @@ public class RestaurantDaoImpl implements RestaurantDao {
         restaurant.setAverageRating(rs.getDouble("average_rating"));
 
         return restaurant;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Table> getTablesByRestaurantId(int restaurantId) throws Exception {
-        List<Table> tableList = new ArrayList<>();
-        String sql = "SELECT * FROM restaurant_table WHERE restaurant_id = ?";
-
-        try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, restaurantId);
-            var rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Table s = new Table(rs.getString("table_code"), rs.getInt("capacity"));
-                s.setId(rs.getInt("id"));
-                tableList.add(s);
-            }
-        }
-
-        return tableList;
     }
 
     /**

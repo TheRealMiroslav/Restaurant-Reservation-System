@@ -18,15 +18,6 @@ public interface CustomerDao {
     Optional<Customer> getByEmail(String email) throws Exception;
 
     /**
-     * Vyhledá zákazníka podle jeho ID.
-     *
-     * @param id Unikátní identifikátor zákazníka.
-     * @return Optional obsahující zákazníka.
-     * @throws Exception Při chybě komunikace s databází.
-     */
-    Optional<Customer> getById(int id) throws Exception;
-
-    /**
      * Vytvoří nového zákazníka v systému.
      *
      * @param firstName   Jméno

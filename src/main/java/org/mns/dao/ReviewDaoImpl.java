@@ -31,31 +31,6 @@ public class ReviewDaoImpl implements ReviewDao {
      * {@inheritDoc}
      */
     @Override
-    public void deleteReview(int id) throws Exception {
-        String sql = "DELETE FROM review WHERE id = ?";
-
-        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-
-            stmt.executeUpdate();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<Review> getReviewsByRestaurantId(int restaurantId) throws Exception {
-        List<Review> reviewList = new ArrayList<>();
-        String sql = "SELECT * FROM review WHERE restaurant_id = ?";
-
-        return getReviews(restaurantId, reviewList, sql);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public List<Review> getReviewsByCustomerId(int customerId) throws Exception {
         List<Review> reviewList = new ArrayList<>();
         String sql = "SELECT * FROM review WHERE customer_id = ?";

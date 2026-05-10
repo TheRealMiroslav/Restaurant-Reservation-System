@@ -32,24 +32,6 @@ public class CustomerDaoImpl implements CustomerDao {
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Optional<Customer> getById(int id) throws Exception {
-        String sql = "SELECT * FROM customer WHERE id = ?";
-
-        try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-
-            Optional<Customer> customer = getCustomer(stmt);
-
-            if (customer.isPresent()) return customer;
-        }
-
-        return Optional.empty();
-    }
-
-    /**
      * Pomocná metoda pro mapování ResultSetu na objekt Customer.
      *
      * @param stmt Připravený příkaz s výsledkem.

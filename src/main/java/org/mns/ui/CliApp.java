@@ -41,7 +41,7 @@ public class CliApp {
 
         CustomerService customerService = new CustomerServiceImpl(customerDao);
         ReservationService reservationService = new ReservationServiceImpl(reservationDao, tableDao);
-        RestaurantService restaurantService = new RestaurantServiceImpl(restaurantDao);
+        RestaurantService restaurantService = new RestaurantServiceImpl(restaurantDao, tableDao);
         ReviewService reviewService = new ReviewServiceImpl(reviewDao, reservationDao);
         ReservationFacade reservationFacade = new ReservationFacadeImpl(restaurantService, reservationService);
 

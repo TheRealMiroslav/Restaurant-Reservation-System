@@ -3,6 +3,7 @@ package org.mns.dao;
 import org.mns.model.Table;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * Rozhraní pro operace se stoly v restauracích.
@@ -27,4 +28,12 @@ public interface TableDao {
      * @throws Exception Při chybě komunikace s databází.
      */
     Table getById(int id) throws Exception;
+
+    /**
+     * Načte všechny stoly, které patří dané restauraci.
+     *
+     * @param restaurantId ID restaurace.
+     * @return Seznam objektů Table.
+     */
+    List<Table> getTablesByRestaurantId(int restaurantId) throws Exception;
 }

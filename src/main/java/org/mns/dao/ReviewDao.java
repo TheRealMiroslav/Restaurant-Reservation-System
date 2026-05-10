@@ -17,23 +17,6 @@ public interface ReviewDao {
     void createReview(Review review) throws Exception;
 
     /**
-     * Odstraní recenzi podle jejího ID.
-     *
-     * @param id ID recenze k smazání.
-     * @throws Exception Při chybě komunikace s databází.
-     */
-    void deleteReview(int id) throws Exception;
-
-    /**
-     * Vrátí seznam všech recenzí pro danou restauraci.
-     *
-     * @param restaurantId ID restaurace.
-     * @return Seznam recenzí.
-     * @throws Exception Při chybě komunikace s databází.
-     */
-    List<Review> getReviewsByRestaurantId(int restaurantId) throws Exception;
-
-    /**
      * Vrátí seznam všech recenzí napsaných daným zákazníkem.
      *
      * @param customerId ID zákazníka.

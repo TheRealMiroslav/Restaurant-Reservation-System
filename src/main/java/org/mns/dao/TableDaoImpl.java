@@ -3,7 +3,11 @@ package org.mns.dao;
 import org.mns.db.DatabaseManager;
 import org.mns.model.Table;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JDBC implementace rozhraní {@link TableDao}.
@@ -52,5 +56,27 @@ public class TableDaoImpl implements TableDao {
 
             return null;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Table> getTablesByRestaurantId(int restaurantId) throws Exception {
+        List<Table> tableList = new ArrayList<>();
+        String sql = "SELECT * FROM restaurant_table WHERE restaurant_id = ?";
+
+        try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, restaurantId);
+            var rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Table s = new Table(rs.getString("table_code"), rs.getInt("capacity"));
+                s.setId(rs.getInt("id"));
+                tableList.add(s);
+            }
+        }
+
+        return tableList;
     }
 }
