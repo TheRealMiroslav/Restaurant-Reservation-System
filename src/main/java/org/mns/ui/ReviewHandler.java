@@ -1,6 +1,5 @@
 package org.mns.ui;
 
-import org.mns.model.Reservation;
 import org.mns.model.Restaurant;
 import org.mns.model.Review;
 import org.mns.service.RestaurantService;
@@ -24,6 +23,9 @@ public class ReviewHandler {
         this.restaurantService = restaurantService;
     }
 
+    /**
+     * Obsluhuje UC-05 Napsat recenzi
+     */
     public void handleCreateReview() {
         title("Napsat recenzi");
 

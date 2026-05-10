@@ -20,8 +20,11 @@ public class AuthHandler {
         this.customerService = customerService;
     }
 
+    /**
+     * Obsluhuje UC-01 Přihlásit se
+     */
     public void handleLogin() {
-        title("Přihlášení");
+        title("Přihlášení uživatele");
 
         System.out.print("E-mail: ");
         String email = sc.nextLine().trim();

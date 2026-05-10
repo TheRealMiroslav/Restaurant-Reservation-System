@@ -41,7 +41,11 @@ public class ReservationDaoImpl implements ReservationDao {
     public List<Reservation> getReservationByCustomerId(int customerId) throws Exception {
         List<Reservation> reservationList = new java.util.ArrayList<>();
 
-        String sql = "SELECT * FROM reservation WHERE customer_id = ?";
+        String sql = "SELECT res.*, t.table_code, t.capacity, r.name AS rest_name " +
+                     "FROM reservation res " +
+                     "JOIN restaurant_table t ON res.table_id = t.id " +
+                     "JOIN restaurant r ON t.restaurant_id = r.id " +
+                     "WHERE res.customer_id = ?";
 
         try (Connection conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
@@ -60,6 +64,10 @@ public class ReservationDaoImpl implements ReservationDao {
                 reservation.setNumOfPeople(rs.getInt("person_count"));
 
                 reservation.setStatus(ReservationStateFactory.getState(rs.getString("status")));
+
+                reservation.setRestaurantName(rs.getString("rest_name"));
+                reservation.setTableCode(rs.getString("table_code"));
+                reservation.setTableCapacity(rs.getInt("capacity"));
 
                 reservationList.add(reservation);
             }

@@ -102,6 +102,19 @@ public class RestaurantDaoImpl implements RestaurantDao {
     }
 
     @Override
+    public Restaurant getRestaurantByTableId(int tableId) throws Exception {
+        String sql = "SELECT r.* FROM restaurant r JOIN restaurant_table t ON r.id = t.restaurant_id WHERE t.id = ?";
+        try (Connection conn = DatabaseManager.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, tableId);
+            var rs = stmt.executeQuery();
+            if (rs.next()) {
+                return getRestaurants(rs);
+            }
+            return null;
+        }
+    }
+
+    @Override
     public void updateRestaurantRating(int restaurantId) throws Exception {
         String sql = "UPDATE restaurant SET average_rating = " + "(SELECT AVG(rating) FROM review WHERE restaurant_id = ?) " + "WHERE id = ?";
 
